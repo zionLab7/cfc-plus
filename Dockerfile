@@ -21,7 +21,7 @@ ENV ASPNETCORE_ENVIRONMENT=Production CFC_DATA_DIR=/data CFC_INSTALLATION_MODE=c
 USER 1654:1654
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 CMD curl --fail --silent http://127.0.0.1:8080/api/health || exit 1
-ENTRYPOINT ["/usr/bin/tini","--"]
+ENTRYPOINT ["/usr/bin/tini","-s","--"]
 CMD ["dotnet","CfcPilot.dll","--urls","http://0.0.0.0:8080"]
 
 # Interactive browser is an explicit image variant. Chromium keeps its sandbox.

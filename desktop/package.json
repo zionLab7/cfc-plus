@@ -77,5 +77,6 @@
       ],
       "language": "1046"
     }
-  }
+  },
+  "packageManager": "pnpm@11.19.0"
 }

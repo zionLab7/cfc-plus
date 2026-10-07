@@ -36,7 +36,7 @@ node tests/integration.mjs
 CFC_TEST_RELATIONAL=1 node tests/integration.mjs
 ```
 
-O cliente Windows usa `desktop/pnpm-lock.yaml`. Execute `pnpm install --frozen-lockfile`, `node node_modules/electron/install.js`, publique o servidor em `artifacts/server/windows-x64` e execute `pnpm run build:win` dentro de `desktop`.
+O cliente Windows usa `desktop/pnpm-lock.yaml`. Execute `corepack enable` e `pnpm install --frozen-lockfile --ignore-scripts`, `node node_modules/electron/install.js`, publique o servidor em `artifacts/server/windows-x64` e execute `pnpm run build:win` dentro de `desktop`.
 
 ## Operação e limites
 
