@@ -1,0 +1,780 @@
+[
+  {
+    "id": "logaralunogov",
+    "name": "Aluno · acesso GOV.BR / Poupatempo",
+    "portal": "detran",
+    "url": "https://www.poupatempo.sp.gov.br/",
+    "status": "Navegador interno e preenchimento assistido · login real em validação",
+    "steps": [
+      "Abrir portal oficial",
+      "Preencher acesso do aluno e aguardar CAPTCHA/MFA manual",
+      "Conferir CPF e serviços disponíveis",
+      "Ler dados visíveis para revisão"
+    ],
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/01_GOV_BR_LOGIN_AUTOMATICO/NavPoupaTempo.LogarAlunoGov/AlunoLogarModule.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/01_GOV_BR_LOGIN_AUTOMATICO/NavPoupaTempo.LogarAlunoGov/AlunoLogado.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/01_GOV_BR_LOGIN_AUTOMATICO/NavPoupaTempo.LogarAlunoGov/AlunoLogarCPF.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/01_GOV_BR_LOGIN_AUTOMATICO/NavPoupaTempo.LogarAlunoGov/AlunoLogarSenha.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/01_GOV_BR_LOGIN_AUTOMATICO/NavPoupaTempo.LogarAlunoGov/RedirectGov.cs"
+    ],
+    "readOnly": false,
+    "studentSession": true
+  },
+  {
+    "id": "precadastro",
+    "name": "Precadastro",
+    "portal": "ecnh",
+    "url": "https://www.e-cnhsp.sp.gov.br/gefor/GFR/candidato/cadastro/preCadastro.do?method=iniciarGeracaoCadastroPrimeiraHabilitacao&",
+    "status": "Navegação assistida · validação pendente",
+    "steps": [
+      "frmHorariosInterior",
+      "Preenchimento",
+      "Validacao"
+    ],
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/DetranSP_Projeto/DetranSP.Nav.Precadastro/PreCadastroModule.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/DetranSP_Projeto/DetranSP.Nav.Precadastro/frmHorariosInterior.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/DetranSP_Projeto/DetranSP.Nav.Precadastro/Preenchimento.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/DetranSP_Projeto/DetranSP.Nav.Precadastro/Validacao.cs"
+    ],
+    "readOnly": false
+  },
+  {
+    "id": "preoutros",
+    "name": "Pre Outros",
+    "portal": "ecnh",
+    "url": "https://www.e-cnhsp.sp.gov.br/gefor/GFR/candidato/cadastro/preCadastro.do?method=iniciarPrimeiraHabilitacao",
+    "status": "Navegação assistida · validação pendente",
+    "steps": [
+      "PreenchimentoOutros"
+    ],
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/DetranSP_Projeto/DetranSP.Nav.PreOutros/PreOutrosModule.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/DetranSP_Projeto/DetranSP.Nav.PreOutros/PreenchimentoOutros.cs"
+    ],
+    "readOnly": false
+  },
+  {
+    "id": "suporte",
+    "name": "Suporte",
+    "portal": "detran",
+    "url": "https://detransp.custhelp.com/app/utils/login_form/redirect/home",
+    "status": "Navegação assistida · validação pendente",
+    "steps": [
+      "Login"
+    ],
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/DetranSP_Projeto/DetranSP.Nav.Suporte/SuporteModule.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/DetranSP_Projeto/DetranSP.Nav.Suporte/Login.cs"
+    ],
+    "readOnly": false
+  },
+  {
+    "id": "coletabiometrica",
+    "name": "Coleta Biometrica",
+    "portal": "detran",
+    "url": "https://www.detran.sp.gov.br/detransp?id=carta_de_servico_coletar_biometria",
+    "status": "Navegação assistida · validação pendente",
+    "steps": [
+      "Iniciar Serviço Coleta",
+      "Selecionar Posto de Atendimento",
+      "Coletar Datas e Horários",
+      "Confirmar Agendamento",
+      "Confirmar Dados",
+      "Concluir Agendamento",
+      "Extrair Comprovante",
+      "Agendamento Já Existente"
+    ],
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.ColetaBiometrica/ColetaBiometricaSPModule.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.ColetaBiometrica.Steps/Step1IniciarServico.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.ColetaBiometrica.Steps/Step2SelecionarLocal.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.ColetaBiometrica.Steps/Step3ColetarDatasHoras.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.ColetaBiometrica.Steps/Step4ConfirmarAgendamento.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.ColetaBiometrica.Steps/Step5Confirmar.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.ColetaBiometrica.Steps/Step6Concluir.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.ColetaBiometrica.Steps/Step7ExtrairComprovante.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.ColetaBiometrica.Steps/StepJaAgendado.cs"
+    ],
+    "readOnly": false
+  },
+  {
+    "id": "codsegurancaconsultar",
+    "name": "Cod Seguranca Consultar",
+    "portal": "detran",
+    "url": "https://operacoes.sp.gov.br/DetranWeb/codigosegurancacnhdigital?null",
+    "status": "Navegação assistida · validação pendente",
+    "steps": [
+      "Pesquisa do Código de Segurança",
+      "Captura de Dados da CNH"
+    ],
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.Emissao.CodSegurancaConsultar/CodSegurancaConsultarModule.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.Emissao.CodSegurancaConsultar.Steps/Step1PesquisaCodSeguranca.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.Emissao.CodSegurancaConsultar.Steps/Step2CapturaCodigo.cs"
+    ],
+    "readOnly": true
+  },
+  {
+    "id": "historicoinfracoes",
+    "name": "Historico Infracoes",
+    "portal": "detran",
+    "url": "https://www.detran.sp.gov.br/detransp?id=historico_de_infracoes",
+    "status": "Navegação assistida · validação pendente",
+    "steps": [
+      "Extrair Histórico de Infrações"
+    ],
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.HistoricoInfracoes/HistoricoInfracoesSPModule.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.HistoricoInfracoes.Steps/Step1ExtrairDados.cs"
+    ],
+    "readOnly": true
+  },
+  {
+    "id": "medicopsicoadicao",
+    "name": "Medico Psico Adicao",
+    "portal": "detran",
+    "url": "https://operacoes.sp.gov.br/DetranWeb/adicaoMudancaCategoria",
+    "status": "Navegação assistida · validação pendente",
+    "steps": [
+      "Validação CNH Adição",
+      "Questionário Adição"
+    ],
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.MedicoPsicoAdicao/MedicoPsicoAdicaoSPModule.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.MedicoPsicoAdicao.Steps/Step1Validar.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.MedicoPsicoAdicao.Steps/Step2QuestionarioAdicao.cs"
+    ],
+    "readOnly": false
+  },
+  {
+    "id": "medicopsicoprimeira",
+    "name": "Medico Psico Primeira",
+    "portal": "detran",
+    "url": "https://operacoes.sp.gov.br/DetranWeb/primeiraHabilitacao",
+    "status": "Navegação assistida · validação pendente",
+    "steps": [
+      "Cadastro RG",
+      "Aceite das Informações",
+      "Seleção de Categoria",
+      "Escolha CNH Física/Digital",
+      "Pagamento Pix CNH Física",
+      "Preenchimento de Contatos e Opções",
+      "Endereço",
+      "Escolha Data/Hora Exames",
+      "Confirmação Final",
+      "Comprovante Final"
+    ],
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.MedicoPsicoPrimeira/MedicoPsicoPrimeiraSPModule.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.MedicoPsicoPrimeira.Steps/Step1CadastrarRG.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.MedicoPsicoPrimeira.Steps/Step2Aceite.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.MedicoPsicoPrimeira.Steps/Step3Categoria.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.MedicoPsicoPrimeira.Steps/Step4bCnhFisicaDigital.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.MedicoPsicoPrimeira.Steps/Step4cPagamentoPix.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.MedicoPsicoPrimeira.Steps/Step4DadosPessoais.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.MedicoPsicoPrimeira.Steps/Step5Endereco.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.MedicoPsicoPrimeira.Steps/Step6EscolheDataHora.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.MedicoPsicoPrimeira.Steps/Step7Confirmacao.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.MedicoPsicoPrimeira.Steps/Step8ComprovanteFinal.cs"
+    ],
+    "readOnly": false
+  },
+  {
+    "id": "navegarlogado",
+    "name": "Navegar Logado",
+    "portal": "detran",
+    "url": "https://www.detran.sp.gov.br/detransp",
+    "status": "Navegação assistida · validação pendente",
+    "steps": [
+      "Autenticar no portal",
+      "Revisar os dados do aluno",
+      "Executar no portal e registrar o protocolo"
+    ],
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.NavegarLogado/NavegarLogadoModule.cs"
+    ],
+    "readOnly": true
+  },
+  {
+    "id": "praticoagendar",
+    "name": "Pratico Agendar",
+    "portal": "detran",
+    "url": "https://operacoes.sp.gov.br/DetranWeb/faces/pages/provaPratica/pesquisaView.xhtml",
+    "status": "Navegação assistida · validação pendente",
+    "steps": [
+      "Agendamento Prático Finalizado",
+      "Pesquisa de Aluno Prático",
+      "Modal Exame Já Agendado",
+      "Confirmar Dados Aluno",
+      "Identificação Categoria/Banca",
+      "Escolher Categoria Prático",
+      "Verificação e Pagamento de Taxa",
+      "Escolher Tipo de Busca",
+      "Escolher Localidade",
+      "Coletar Datas e Horários",
+      "Confirmação Final Prático"
+    ],
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.PraticoAgendar/PraticoAgendarModule.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.PraticoAgendar.Steps/Step10AgendamentoOk.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.PraticoAgendar.Steps/Step1Pesquisa.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.PraticoAgendar.Steps/Step2bJaAgendado.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.PraticoAgendar.Steps/Step2ConfirmarDados.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.PraticoAgendar.Steps/Step3EscolherCategoriaBanca.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.PraticoAgendar.Steps/Step4EscolherCategoria.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.PraticoAgendar.Steps/Step5PagamentoPix.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.PraticoAgendar.Steps/Step6EscolherTipoAgendamento.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.PraticoAgendar.Steps/Step7EscolherLocalidade.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.PraticoAgendar.Steps/Step8EscolherDataHora.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.PraticoAgendar.Steps/Step9ConfirmacaoFinal.cs"
+    ],
+    "readOnly": false
+  },
+  {
+    "id": "login",
+    "name": "Login",
+    "portal": "sefaz",
+    "url": "https://pixveiculos.fazenda.sp.gov.br/",
+    "status": "Navegação assistida · validação pendente",
+    "steps": [
+      "Capturar Token da Sefaz",
+      "Clicar 'Entrar com gov.br' (Sefaz)"
+    ],
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.Sefaz.Login/SefazLoginModule.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.Sefaz.Login.Steps/Step2CapturarTokenSefaz.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.Sefaz.Login.Steps/StepClicarEntrarGovBr.cs"
+    ],
+    "readOnly": false
+  },
+  {
+    "id": "teoricoagendar",
+    "name": "Teorico Agendar",
+    "portal": "detran",
+    "url": "https://operacoes.sp.gov.br/DetranWeb/agendamentoExameTeorico",
+    "status": "Navegação assistida · validação pendente",
+    "steps": [
+      "Pagamento da Taxa de Exame Teórico",
+      "Pesquisa de Aluno/Renach",
+      "Escolher Unidade de Exame Teórico",
+      "Escolher Data/Hora Teórico",
+      "Confirmação do Agendamento",
+      "Agendamento Finalizado (Sucesso/Protocolo)",
+      "Consulta Teórico (Menu)",
+      "Consulta Teórico (Scrape)"
+    ],
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.TeoricoAgendar/TeoricoAgendarModule.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.TeoricoAgendar.Steps/Step1bPagamentoTaxa.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.TeoricoAgendar.Steps/Step1Pesquisa.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.TeoricoAgendar.Steps/Step2EscolherUnidade.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.TeoricoAgendar.Steps/Step3EscolherDataHora.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.TeoricoAgendar.Steps/Step4Confirmacao.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.TeoricoAgendar.Steps/Step5AgendamentoOk.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.TeoricoAgendar.Steps/Step6ConsultaMenuTeorico.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.TeoricoAgendar.Steps/Step7ConsultaScrapeTeorico.cs"
+    ],
+    "readOnly": false
+  },
+  {
+    "id": "teoricocursocertificadoconsultavalidacao",
+    "name": "Teorico Curso Certificado Consulta Validacao",
+    "portal": "detran",
+    "url": "https://www.detran.sp.gov.br/detransp?id=csm_my_cases",
+    "status": "Navegação assistida · validação pendente",
+    "steps": [
+      "Localizar e Abrir Protocolo"
+    ],
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.TeoricoCursoCertificadoConsultaValidacao/TeoricoCursoCertificadoConsultaValidacaoSPModule.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.TeoricoCursoCertificadoConsultaValidacao.Steps/Step1LocalizarProtocolo.cs"
+    ],
+    "readOnly": true
+  },
+  {
+    "id": "teoricocursovalidarcertificado",
+    "name": "Teorico Curso Validar Certificado",
+    "portal": "detran",
+    "url": "https://www.detran.sp.gov.br/detransp?id=sc_cat_item_detransp_svc&sys_id=9ffe1f1c874b121422bdc9530cbb3570&svc_id=d6dc808d47b53a9006482a54f26d4337&_reloaded=1",
+    "status": "Navegação assistida · validação pendente",
+    "steps": [
+      "Preencher e Upload Certificado",
+      "Confirmação Validação Teórico"
+    ],
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.TeoricoCursoValidarCertificado/TeoricoCursoValidarCertificadoSPModule.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.TeoricoCursoValidarCertificado.Steps/Step1PreencherEUpload.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.TeoricoCursoValidarCertificado.Steps/Step2ConfirmacaoSucesso.cs"
+    ],
+    "readOnly": false
+  },
+  {
+    "id": "teoricoexcluir",
+    "name": "Teorico Excluir",
+    "portal": "detran",
+    "url": "https://operacoes.sp.gov.br/DetranWeb/faces/pages/agendamentoExameEspecializado/menuView.xhtml",
+    "status": "Navegação assistida · validação pendente",
+    "steps": [
+      "Menu Teórico (Cancelar)",
+      "Confirmar Cancelamento Teórico",
+      "Cancelamento Teórico Confirmado"
+    ],
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.TeoricoExcluir/TeoricoExcluirModule.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.TeoricoExcluir.Steps/Step1AcessarMenuCancelamento.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.TeoricoExcluir.Steps/Step2ConfirmarCancelamento.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.TeoricoExcluir.Steps/Step3SucessoExclusao.cs"
+    ],
+    "readOnly": false
+  },
+  {
+    "id": "criarnovo",
+    "name": "Criar Novo",
+    "portal": "sempapel",
+    "url": "https://www.documentos.spsempapel.sp.gov.br/sigaex/app/expediente/doc/editar",
+    "status": "Navegação assistida · validação pendente",
+    "steps": [
+      "Criar",
+      "RedirectNovo"
+    ],
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.SemPapel.CriarNovo/CriarNovoModule.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.SemPapel.CriarNovo/Criar.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.SemPapel.CriarNovo/RedirectNovo.cs"
+    ],
+    "readOnly": false
+  },
+  {
+    "id": "logar",
+    "name": "Logar",
+    "portal": "sempapel",
+    "url": "https://www.spsempapel.sp.gov.br/entrar/",
+    "status": "Navegação assistida · validação pendente",
+    "steps": [
+      "LogarSemPapel",
+      "SemPapelLogado"
+    ],
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.SemPapel.Logar/LogarModule.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.SemPapel.Logar/LogarSemPapel.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.SemPapel.Logar/SemPapelLogado.cs"
+    ],
+    "readOnly": false
+  },
+  {
+    "id": "ecnh-aulas",
+    "name": "Consultar aulas práticas",
+    "portal": "ecnh",
+    "url": "https://www.e-cnhsp.sp.gov.br/gefor/GFR/relatorio/listagemaula/pratica.do?cpfPesquisa={cpf}",
+    "steps": [
+      "Autenticar o instrutor ou diretor",
+      "Consultar a carga horária por CPF",
+      "Conferir início e término e guardar evidência"
+    ],
+    "readOnly": true,
+    "status": "Navegação assistida · validação pendente",
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/ConsultarAula.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/Endereco.cs"
+    ]
+  },
+  {
+    "id": "ecnh-iniciar",
+    "name": "Registrar início de aula",
+    "portal": "ecnh",
+    "url": "https://www.e-cnhsp.sp.gov.br/gefor/GFR/aula/controleAulaPratica.do?method=iniciarPesquisaInicioAula&cpfPesquisa={cpf}",
+    "steps": [
+      "Selecionar a aula e o instrutor",
+      "Autenticar certificado/cartão",
+      "Coletar biometria no equipamento homologado",
+      "Confirmar início no portal"
+    ],
+    "readOnly": false,
+    "status": "Navegação assistida · validação pendente",
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/ConsultarAula.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/Endereco.cs"
+    ]
+  },
+  {
+    "id": "ecnh-finalizar",
+    "name": "Registrar término de aula",
+    "portal": "ecnh",
+    "url": "https://www.e-cnhsp.sp.gov.br/gefor/GFR/aula/controleAulaPratica.do?method=iniciarPesquisaFimAula&cpfPesquisa={cpf}",
+    "steps": [
+      "Selecionar a aula iniciada",
+      "Coletar biometria no equipamento homologado",
+      "Confirmar término e conferir carga horária"
+    ],
+    "readOnly": false,
+    "status": "Navegação assistida · validação pendente",
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/ConsultarAula.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/Endereco.cs"
+    ]
+  },
+  {
+    "id": "ecnh-simulador",
+    "name": "Registrar aula de simulador",
+    "portal": "ecnh",
+    "url": "https://www.e-cnhsp.sp.gov.br/gefor/GFR/aula/controleAulaSimulador.do?method=iniciarPesquisaInicioAula&cpfPesquisa={cpf}",
+    "steps": [
+      "Autenticar o profissional",
+      "Selecionar candidato e simulador",
+      "Coletar biometria e confirmar no portal"
+    ],
+    "readOnly": false,
+    "status": "Navegação assistida · validação pendente",
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/ConsultarAula.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/Endereco.cs"
+    ]
+  },
+  {
+    "id": "renach",
+    "name": "RENACH e dados do candidato",
+    "portal": "ecnh",
+    "url": "https://www.e-cnhsp.sp.gov.br/gefor/",
+    "status": "Fluxo manual · adaptador específico pendente",
+    "steps": [
+      "Autenticar a conta responsável",
+      "Abrir o serviço na sessão persistente",
+      "Conferir dados e condições no portal",
+      "Registrar resultado ou pendência"
+    ],
+    "readOnly": true,
+    "sources": []
+  },
+  {
+    "id": "ladv",
+    "name": "Emitir / consultar LADV",
+    "portal": "ecnh",
+    "url": "https://www.e-cnhsp.sp.gov.br/gefor/",
+    "status": "Fluxo manual · adaptador específico pendente",
+    "steps": [
+      "Autenticar a conta responsável",
+      "Abrir o serviço na sessão persistente",
+      "Conferir dados e condições no portal",
+      "Registrar resultado ou pendência"
+    ],
+    "readOnly": false,
+    "sources": []
+  },
+  {
+    "id": "ecnh-matricula",
+    "name": "Matricular candidato / liberar matrícula",
+    "portal": "ecnh",
+    "url": "https://www.e-cnhsp.sp.gov.br/gefor/",
+    "status": "Fluxo manual · adaptador específico pendente",
+    "steps": [
+      "Autenticar a conta responsável",
+      "Abrir o serviço na sessão persistente",
+      "Conferir dados e condições no portal",
+      "Registrar resultado ou pendência"
+    ],
+    "readOnly": false,
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNavArquivos.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/CefSharp/DependencyChecker.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/AutenticarRemoto.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/Base.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/ConsultarAula.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/DownloadHandler.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/Endereco.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/EnumBase.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/Enumeradores.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/FinalizarAula.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/frmInstrutor.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/frmNav.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/frmpadrao.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/ibase.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/InicioAula.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/JLifespanHandler.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/LogDialogHandler.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/NavStateChangedEventArgs.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/Program.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/PropriedadeCurso.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/Status.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/Titulos.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/Util.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav.Classes/CookieCollector.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav.Classes/MonitorAula.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav.Properties/Resources.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav.Properties/Settings.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/Properties/AssemblyInfo.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/Util/Finput.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/InforCFC.Ecnh/DetranBase.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/InforCFC.Ecnh/EcnhBase.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/InforCFC.Ecnh/EcnhLogger.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/InforCFC.Ecnh/frmFinal.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/InforCFC.Ecnh/frmInsereTeorico.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/InforCFC.Ecnh/frmStep1.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/InforCFC.Ecnh/frmVerificaBiometria.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/InforCFC.Ecnh/frmVisualizaConsultaEcnh.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/InforCFC.Ecnh/Init.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/InforCFC.Ecnh/TaskExtensions.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/NavPoupaTempo.Ecnh.DiretorConfigurar/Class1.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/NavPoupaTempo.Ecnh.DiretorConfigurar/DiretorConfigurarModule.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/NavPoupaTempo.Ecnh.DiretorConfigurar/GetPerfil.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/RequestEcnh.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/RetornoEcnh.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/DetranSP_Projeto/DetranSP.LogarEcnh/CookieCollector.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/DetranSP_Projeto/DetranSP.LogarEcnh/DadosLoginEcnh.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/DetranSP_Projeto/DetranSP.LogarEcnh/frmLogar.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/DetranSP_Projeto/DetranSP.LogarEcnh/frmProcessoLogin.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/DetranSP_Projeto/DetranSP.LogarEcnh/LogDialogHandler.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/DetranSP_Projeto/DetranSP.LogarEcnh/MonitoraLoginEcnh.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/DetranSP_Projeto/PreCadastroSP/frmEcnh.cs"
+    ]
+  },
+  {
+    "id": "ecnh-certificados",
+    "name": "Certificados teóricos e práticos",
+    "portal": "ecnh",
+    "url": "https://www.e-cnhsp.sp.gov.br/gefor/",
+    "status": "Fluxo manual · adaptador específico pendente",
+    "steps": [
+      "Autenticar a conta responsável",
+      "Abrir o serviço na sessão persistente",
+      "Conferir dados e condições no portal",
+      "Registrar resultado ou pendência"
+    ],
+    "readOnly": false,
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNavArquivos.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/CefSharp/DependencyChecker.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/AutenticarRemoto.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/Base.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/ConsultarAula.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/DownloadHandler.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/Endereco.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/EnumBase.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/Enumeradores.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/FinalizarAula.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/frmInstrutor.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/frmNav.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/frmpadrao.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/ibase.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/InicioAula.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/JLifespanHandler.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/LogDialogHandler.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/NavStateChangedEventArgs.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/Program.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/PropriedadeCurso.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/Status.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/Titulos.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav/Util.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav.Classes/CookieCollector.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav.Classes/MonitorAula.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav.Properties/Resources.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/EcnhNav.Properties/Settings.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/Properties/AssemblyInfo.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/EcnhNav_Projeto/Util/Finput.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/InforCFC.Ecnh/DetranBase.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/InforCFC.Ecnh/EcnhBase.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/InforCFC.Ecnh/EcnhLogger.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/InforCFC.Ecnh/frmFinal.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/InforCFC.Ecnh/frmInsereTeorico.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/InforCFC.Ecnh/frmStep1.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/InforCFC.Ecnh/frmVerificaBiometria.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/InforCFC.Ecnh/frmVisualizaConsultaEcnh.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/InforCFC.Ecnh/Init.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/InforCFC.Ecnh/TaskExtensions.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/NavPoupaTempo.Ecnh.DiretorConfigurar/Class1.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/NavPoupaTempo.Ecnh.DiretorConfigurar/DiretorConfigurarModule.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/NavPoupaTempo.Ecnh.DiretorConfigurar/GetPerfil.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/RequestEcnh.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/02_ECNH_SP_TOKEN_E_BIOMETRIA/RetornoEcnh.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/DetranSP_Projeto/DetranSP.LogarEcnh/CookieCollector.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/DetranSP_Projeto/DetranSP.LogarEcnh/DadosLoginEcnh.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/DetranSP_Projeto/DetranSP.LogarEcnh/frmLogar.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/DetranSP_Projeto/DetranSP.LogarEcnh/frmProcessoLogin.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/DetranSP_Projeto/DetranSP.LogarEcnh/LogDialogHandler.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/DetranSP_Projeto/DetranSP.LogarEcnh/MonitoraLoginEcnh.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/DetranSP_Projeto/PreCadastroSP/frmEcnh.cs"
+    ]
+  },
+  {
+    "id": "sei",
+    "name": "Processos SEI",
+    "portal": "detran",
+    "url": "https://www.detran.sp.gov.br/detransp",
+    "status": "Fluxo manual · adaptador específico pendente",
+    "steps": [
+      "Autenticar a conta responsável",
+      "Abrir o serviço na sessão persistente",
+      "Conferir dados e condições no portal",
+      "Registrar resultado ou pendência"
+    ],
+    "readOnly": false,
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.Sei/DicaAutoescola.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.Sei/DicaCondutor.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.Sei/DicaPadrao.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.Sei/IDica.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.Sei/Listas.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.Sei/ListItem.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.Sei/Protocolo.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.Sei/SeiCondutor.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.Sei/SeiCredenciamento.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.Sei/SeiDicas.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.Sei/SeiHelp.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.Sei/WindowMonitor.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.SemPapel.CriarNovo/Criar.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.SemPapel.CriarNovo/CriarNovoModule.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.SemPapel.CriarNovo/RedirectNovo.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.SemPapel.Logar/LogarModule.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.SemPapel.Logar/LogarSemPapel.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/04_SEI_E_SEM_PAPEL/NavPoupaTempo.SemPapel.Logar/SemPapelLogado.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/05_STEALTH_E_INJETORES_DOM/Injetores/BaseInjector.cs"
+    ]
+  },
+  {
+    "id": "senatran",
+    "name": "Consulta SENATRAN",
+    "portal": "senatran",
+    "url": "https://portalservicos.senatran.serpro.gov.br/",
+    "status": "Fluxo manual · adaptador específico pendente",
+    "steps": [
+      "Autenticar a conta responsável",
+      "Abrir o serviço na sessão persistente",
+      "Conferir dados e condições no portal",
+      "Registrar resultado ou pendência"
+    ],
+    "readOnly": false,
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/Senatran/CnhDetalhesSenatran.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/Senatran/DadosIdentificador.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/Senatran/Endereco.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/Senatran/Habilitacao.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/Senatran/HabilitacaoEstrangeira.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/Senatran/Identificador.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/Senatran/Imagens.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/Senatran/Pid.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/buscaEventosListaRequest.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/buscaEventosListaResponse.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/buscaEventosRequest.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/buscaEventosResponse.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/destinos.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/enderecoMobile.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/eventos.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/objeto.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/Service.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/ServiceChannel.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/ServiceClient.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/sroxml.cs"
+    ]
+  },
+  {
+    "id": "correios",
+    "name": "Rastrear entrega da CNH",
+    "portal": "correios",
+    "url": "https://rastreamento.correios.com.br/app/index.php",
+    "status": "Fluxo manual · adaptador específico pendente",
+    "steps": [
+      "Autenticar a conta responsável",
+      "Abrir o serviço na sessão persistente",
+      "Conferir dados e condições no portal",
+      "Registrar resultado ou pendência"
+    ],
+    "readOnly": true,
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/Senatran/CnhDetalhesSenatran.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/Senatran/DadosIdentificador.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/Senatran/Endereco.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/Senatran/Habilitacao.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/Senatran/HabilitacaoEstrangeira.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/Senatran/Identificador.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/Senatran/Imagens.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/Senatran/Pid.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/buscaEventosListaRequest.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/buscaEventosListaResponse.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/buscaEventosRequest.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/buscaEventosResponse.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/destinos.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/enderecoMobile.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/eventos.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/objeto.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/Service.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/ServiceChannel.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/ServiceClient.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/07_SENATRAN_E_CORREIOS/WsCorreios/sroxml.cs"
+    ]
+  },
+  {
+    "id": "taxas",
+    "name": "Taxas e PIX SEFAZ",
+    "portal": "sefaz",
+    "url": "https://pixveiculos.fazenda.sp.gov.br/",
+    "status": "Fluxo manual · adaptador específico pendente",
+    "steps": [
+      "Autenticar a conta responsável",
+      "Abrir o serviço na sessão persistente",
+      "Conferir dados e condições no portal",
+      "Registrar resultado ou pendência"
+    ],
+    "readOnly": false,
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.Sefaz.Servicos.TaxasDetran/ComprovantePagoTaxaPraticoServico.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.Sefaz.Servicos.TaxasDetran/ComprovantePagoTaxaServicoBase.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.Sefaz.Servicos.TaxasDetran/ComprovantePagoTaxaTeoricoServico.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.Sefaz.Servicos.TaxasDetran/ComprovantesTaxaSefazServico.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.Sefaz.Servicos.TaxasDetran/ConsultarTaxaExameServico.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.Sefaz.Servicos.TaxasDetran/GerarTaxaExameServico.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.Sefaz.Servicos.TaxasDetran/SefazParaTaxa.cs"
+    ]
+  },
+  {
+    "id": "resultado-teorico",
+    "name": "Resultado do exame teórico",
+    "portal": "detran",
+    "url": "https://www.detran.sp.gov.br/detransp",
+    "status": "Fluxo manual · adaptador específico pendente",
+    "steps": [
+      "Autenticar a conta responsável",
+      "Abrir o serviço na sessão persistente",
+      "Conferir dados e condições no portal",
+      "Registrar resultado ou pendência"
+    ],
+    "readOnly": true,
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.TeoricoResultado/ConsultarResultadoTeorico.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.TeoricoResultado/ConsultarResultadoTeoricoServico.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/03_DETRAN_SP_E_POUPATEMPO/NavCnhBrasil.Dominios.DetranSP.Servicos.TeoricoResultado/ResultadoTeoricoModel.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/06_ORQUESTRADORES_E_MOTORES/NavCnhBrasil.Core.Models/NavResultado.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/06_ORQUESTRADORES_E_MOTORES/NavCnhBrasil.Core.Resultados/IResultadoConsultaOrgao.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/06_ORQUESTRADORES_E_MOTORES/NavCnhBrasil.Core.Resultados/ResultadoAcaoSugerida.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/06_ORQUESTRADORES_E_MOTORES/NavCnhBrasil.Core.Resultados/ResultadoConsulta.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/06_ORQUESTRADORES_E_MOTORES/NavCnhBrasil.Core.Resultados/ResultadoOrgao.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/06_ORQUESTRADORES_E_MOTORES/NavCnhBrasil.Core.Resultados/ResultadoResolvedor.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/06_ORQUESTRADORES_E_MOTORES/NavCnhBrasil.Core.Resultados/ResultadoTipoExame.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/06_ORQUESTRADORES_E_MOTORES/NavCnhBrasil.Core.Resultados/RetornoServico.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/06_ORQUESTRADORES_E_MOTORES/NavCnhBrasil.Core.Resultados/StatusServico.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/06_ORQUESTRADORES_E_MOTORES/NavCnhBrasil.Core.Templates/ResultadoTeoricoComprovante.cs"
+    ]
+  },
+  {
+    "id": "student-detran",
+    "name": "Aluno · acesso GOV.BR / DETRAN-SP",
+    "portal": "detran",
+    "url": "https://www.detran.sp.gov.br/detransp",
+    "status": "Navegador interno e preenchimento assistido · login real em validação",
+    "steps": [
+      "Abrir portal oficial",
+      "Preencher acesso do aluno e aguardar CAPTCHA/MFA manual",
+      "Conferir identidade e andamento",
+      "Ler dados visíveis para revisão"
+    ],
+    "sources": [
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/01_GOV_BR_LOGIN_AUTOMATICO/NavPoupaTempo.LogarAlunoGov/AlunoLogarModule.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/01_GOV_BR_LOGIN_AUTOMATICO/NavPoupaTempo.LogarAlunoGov/AlunoLogado.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/01_GOV_BR_LOGIN_AUTOMATICO/NavPoupaTempo.LogarAlunoGov/AlunoLogarCPF.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/01_GOV_BR_LOGIN_AUTOMATICO/NavPoupaTempo.LogarAlunoGov/AlunoLogarSenha.cs",
+      "PACOTE_COMPLETO_GP_AUTOESCOLA/02_CODIGOS_E_LOGICA_DE_AUTOMACAO/01_GOV_BR_LOGIN_AUTOMATICO/NavPoupaTempo.LogarAlunoGov/RedirectGov.cs"
+    ],
+    "readOnly": true,
+    "studentSession": true
+  }
+]

@@ -1,0 +1,55 @@
+name: Verify
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  application:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: dotnet build --nologo
+      - run: dotnet bin/Debug/net10.0/CfcPilot.dll --self-test-commercial
+      - run: dotnet bin/Debug/net10.0/CfcPilot.dll --self-test-community
+      - run: dotnet bin/Debug/net10.0/CfcPilot.dll --self-test-professional-sessions
+      - run: node tests/commercial-http.mjs
+      - run: node tests/integration.mjs
+      - run: CFC_TEST_RELATIONAL=1 node tests/integration.mjs
+      - run: node tools/CommunityUiChecks.cjs && node tools/PortalRecoveryChecks.cjs
+      - run: docker build --target runtime -t cfc-runtime-test .
+      - run: docker build --target browser-check -t cfc-browser-test .
+      - run: docker run --rm --init --shm-size=1g --security-opt seccomp=infra/production/chromium-seccomp.json -e CFC_TEST_USERNS=1 --entrypoint xvfb-run cfc-browser-test -a node /app/tools/NativePortalChecks.cjs /tmp/native-check /opt/electron/electron
+  windows-client:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+        working-directory: desktop
+      - run: node node_modules/electron/install.js
+        working-directory: desktop
+      - run: node --test tests/*.test.cjs
+        working-directory: desktop
+      - run: dotnet publish -c Release -r win-x64 --self-contained true -o artifacts/server/windows-x64
+      - run: pnpm run build:win
+        working-directory: desktop
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CFC-Plus-Windows
+          path: artifacts/desktop/CFC-Plus-Instalador-*.exe
+          retention-days: 14

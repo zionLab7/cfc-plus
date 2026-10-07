@@ -1,0 +1,1 @@
+{"name":"CFC+ · Meu portal","short_name":"Meu CFC+","start_url":"/portal/","scope":"/portal/","display":"standalone","background_color":"#f5f6f2","theme_color":"#123e3c","icons":[{"src":"/portal/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},{"src":"/portal/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"}],"id":"/portal/","lang":"pt-BR"}

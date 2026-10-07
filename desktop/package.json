@@ -1,0 +1,81 @@
+{
+  "name": "cfc-plus-desktop",
+  "version": "0.3.0",
+  "description": "CFC+ — gestão de autoescolas conectada ao servidor",
+  "author": "zionLab7",
+  "private": true,
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "build:win": "electron-builder --win nsis --x64",
+    "test": "node --test tests/*.test.cjs"
+  },
+  "devDependencies": {
+    "electron": "44.5.1",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "br.com.gpautoescola.cfcplus",
+    "productName": "CFC+",
+    "directories": {
+      "output": "../artifacts/desktop",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.cjs",
+      "preload.cjs",
+      "settings.cjs",
+      "server.cjs",
+      "setup.html",
+      "setup.js",
+      "setup.css",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../artifacts/server/windows-x64",
+        "to": "server",
+        "filter": [
+          "**/*",
+          "!App_Data/**",
+          "!docs/**",
+          "!test-results/**",
+          "!PACOTE_COMPLETO_GP_AUTOESCOLA/**",
+          "!infra/**",
+          "!tests/**",
+          "!.github/**",
+          "!**/.env",
+          "!**/.env.*",
+          "!**/*.sqlite",
+          "!**/*.db",
+          "!**/*.protected",
+          "!**/first-access.json",
+          "!**/*control.json*"
+        ]
+      }
+    ],
+    "asar": true,
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "build/icon.ico",
+      "signAndEditExecutable": true,
+      "signExecutable": false,
+      "artifactName": "CFC-Plus-Instalador-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "CFC+",
+      "deleteAppDataOnUninstall": false,
+      "installerLanguages": [
+        "pt_BR"
+      ],
+      "language": "1046"
+    }
+  }
+}
