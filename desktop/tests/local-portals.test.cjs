@@ -43,6 +43,8 @@ test('Janela local usa sandbox, bloqueia navegação externa e oculta ao fechar'
 test('Certificado exige seleção local e recusa origem externa',async()=>{
  const f=fixture();try{await f.controller.open('https://server.example',request);const w=f.windows[0],list=[{subjectName:'Profissional sintético',issuerName:'Emissor fixture'}];let selected;
  const e={preventDefault(){}};assert.equal(await f.controller.certificates(e,w.webContents,access.url,list,c=>selected=c),true);assert.equal(selected,list[0]);
+ await f.controller.certificates(e,w.webContents,'https://certificado.sso.acesso.gov.br/login',list,c=>selected=c);assert.equal(selected,list[0]);
+ await f.controller.certificates(e,w.webContents,'https://certificado.sso.acesso.gov.br.evil.example',list,c=>selected=c);assert.equal(selected,undefined);
  await f.controller.certificates(e,w.webContents,'https://evil.example',list,c=>selected=c);assert.equal(selected,undefined);
  }finally{await f.controller.shutdown();}
 });
@@ -64,4 +66,9 @@ test('Encerramento destrói janelas mesmo se a gravação de cookies falhar',asy
  w.options.webPreferences.session.cookies.flushStore=async()=>{throw Error('Fixture IO');};
  await assert.rejects(f.controller.closeAll(),/Fixture IO/);assert.equal(w.isDestroyed(),true);assert.equal(f.controller.hasActive(),false);
  }finally{await f.controller.shutdown().catch(()=>{});}
+});
+test('Destino oficial de certificado GOV é permitido com limites de HTTPS e porta',()=>{
+ const {allowed}=require('../portal-navigation.cjs');assert.equal(allowed('https://certificado.sso.acesso.gov.br/login'),true);
+ for(const url of ['http://certificado.sso.acesso.gov.br/login','https://certificado.sso.acesso.gov.br.evil.example/login','https://certificado.sso.acesso.gov.br:444/login','https://user@certificado.sso.acesso.gov.br/login'])assert.equal(allowed(url),false);
+ assert.deepEqual([...require('../portal-navigation.cjs').hosts],[...require('../../native-host/navigation.cjs').hosts]);
 });

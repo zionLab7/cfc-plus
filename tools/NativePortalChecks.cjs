@@ -3,6 +3,7 @@
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),assert=require('node:assert/strict'),{spawn}=require('node:child_process');
 async function main(){
  const {allowed}=require('../native-host/navigation.cjs');let boundaryChecks=0;
+ assert.equal(allowed('https://certificado.sso.acesso.gov.br/login'),true);boundaryChecks++;
  assert.equal(allowed('https://idp.sp.gov.br/auth/realms/idpsp'),true);boundaryChecks++;
  for(const url of ['http://idp.sp.gov.br/','https://idp.sp.gov.br.example.org/','https://other.sp.gov.br/','https://idp.sp.gov.br:444/','https://user@idp.sp.gov.br/']){assert.equal(allowed(url),false);boundaryChecks++;}
  const root=path.resolve(process.argv[2]),electron=path.resolve(process.argv[3]);fs.mkdirSync(root,{recursive:true});const token=crypto.randomBytes(32).toString('hex'),config=path.join(root,'control.json');fs.writeFileSync(config,JSON.stringify({root,token,instanceId:crypto.randomUUID().replaceAll('-','')}));
