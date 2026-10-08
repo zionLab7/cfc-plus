@@ -74,3 +74,8 @@ docs/*
 **/*.key
 **/*first-access*
 **/*control.json*
+
+!docs/PORTAINER_PILOTO_GP.md
+!desktop/tests/local-portals.test.cjs
+!tools/LocalPortalChecks.cjs
+!tools/PilotStackChecks.cjs

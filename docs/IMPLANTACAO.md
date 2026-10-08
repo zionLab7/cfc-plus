@@ -1,5 +1,7 @@
 # Implantação central no Portainer, Docker e Traefik
 
+Para o KVM 2 da GP e uma stack única com WhatsApp, use [PORTAINER_PILOTO_GP.md](PORTAINER_PILOTO_GP.md). O roteiro abaixo descreve os exemplos separados originais.
+
 ## Organização
 
 Uma stack cfc-central atende todas as escolas no mesmo domínio. O volume cfc-central-data contém o cadastro da plataforma e uma pasta tenants/<school-id> para cada escola, com banco e recursos próprios. Filiais são Units dentro desse banco, com IDs estáveis. Não é necessário criar domínio, contêiner ou deploy para cada cliente.
@@ -8,11 +10,11 @@ Esta entrega usa Docker Standalone/Compose. Execute uma réplica: o registro cen
 
 ## Imagens e proxy
 
-Após Verify aprovado, publique a versão por tag v0.4.0 ou execute Publish versioned images. As imagens são ghcr.io/zionlab7/cfc-plus:0.4.0 e :0.4.0-browser. A existência dos exemplos não significa que as imagens já foram publicadas. Pode construir na VPS:
+Após Verify aprovado, publique a versão por tag v0.4.1 ou execute Publish versioned images. As imagens são ghcr.io/zionlab7/cfc-plus:0.4.1 e :0.4.1-browser. A existência dos exemplos não significa que as imagens já foram publicadas. Pode construir na VPS:
 
 ~~~sh
-docker build --target runtime -t cfc-plus:0.4.0 .
-docker build --target browser -t cfc-plus:0.4.0-browser .
+docker build --target runtime -t cfc-plus:0.4.1 .
+docker build --target browser -t cfc-plus:0.4.1-browser .
 ~~~
 
 Prefira o digest aprovado em produção. A visibilidade GHCR é independente da do repositório. O contexto Docker usa lista explícita de código e exclui dados de clientes.
@@ -33,13 +35,13 @@ O cadastro só aceita ID de 3 a 48 caracteres: letra minúscula inicial, letras,
 
 ## WhatsApp e navegador
 
-Configure Evolution em Integrações DE CADA ESCOLA, usando instância exclusiva. As configurações privadas ficam no diretório dela. O modo central não herda uma chave/instância global para todos os clientes. Evolution e seu PostgreSQL são serviço privado separado, com backups próprios.
+Configure evolution.config.json PRIVATIVO DE CADA ESCOLA, usando instância exclusiva. A interface permite verificar estado e conectar por QR; a configuração inicial URL/chave/instância ainda é operacional. As configurações privadas ficam no diretório dela. O modo central não herda uma chave/instância global para todos os clientes. Evolution e seu PostgreSQL são serviço privado separado, com backups próprios.
 
 CFC_BROWSER_PROFILES limita perfis por escola; CFC_CENTRAL_BROWSER_PROFILES limita o total no servidor (padrão 12). O limite recusa novas aberturas com mensagem clara; não encerra uma sessão ocupada automaticamente. Aumente conforme medição de RAM/CPU. Cookies/perfis persistentes são próprios de cada escola/profissional; GOV/DETRAN podem expirar a autenticação e exigir nova verificação humana.
 
 ## Atualizações e Windows
 
-Atualize UMA imagem central após backup e homologação. Não habilite deploy automático de cada commit no ambiente com alunos reais. O workflow Verify produz o instalador Windows compartilhado. Publique o .exe aprovado em /data/downloads/CFC-Plus-Windows.exe; o mesmo instalador serve a todas as escolas e conecta ao domínio central.
+Atualize UMA imagem central após backup e homologação. Não habilite deploy automático de cada commit no ambiente com alunos reais. O workflow Verify produz o instalador Windows compartilhado. Publish versioned images também publica o instalador e SHA-256 em Releases após verificar a imagem e o cliente. O cliente 0.4.1 acrescenta navegador local persistente e seleção de certificado Windows; biometria real ainda exige SDK e homologação. Publique o .exe aprovado em /data/downloads/CFC-Plus-Windows.exe; o mesmo instalador serve a todas as escolas e conecta ao domínio central.
 
 Para adotar uma base operacional já existente no piloto, o operador do servidor pode usar --adopt-school <id> --school-name <nome> --legacy-data <pasta-existente> com modo central. Esse comando preserva a pasta/chaves existentes e não é exposto pela API. Backups dessa exceção precisam incluir a pasta externa referenciada. Na VPS nova, prefira importação pelo app em tenants/<id>; DPAPI Windows não pode ser simplesmente copiado para Linux.
 

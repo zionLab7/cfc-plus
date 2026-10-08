@@ -17,6 +17,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - run: node tools/PilotStackChecks.cjs
       - run: dotnet build --nologo
       - run: dotnet bin/Debug/net10.0/CfcPilot.dll --self-test-finance
       - run: dotnet bin/Debug/net10.0/CfcPilot.dll --self-test-commercial
@@ -47,6 +48,18 @@ jobs:
         working-directory: desktop
       - run: node --test tests/*.test.cjs
         working-directory: desktop
+      - name: Verify local Windows portal persistence
+        shell: pwsh
+        run: |
+          $taskFolder = Join-Path $env:RUNNER_TEMP ("cfc-local-" + [guid]::NewGuid().ToString("N"))
+          $taskRuntime = Join-Path $pwd "desktop/node_modules/electron/dist/electron.exe"
+          foreach ($taskStage in @("seed", "restore")) {
+            $taskProcess = Start-Process -FilePath $taskRuntime -ArgumentList @("tools/LocalPortalChecks.cjs", $taskFolder, $taskStage) -WindowStyle Hidden -PassThru -Wait
+            if ($taskProcess.ExitCode -ne 0) { throw "Local portal $taskStage failed" }
+            $taskResult = Get-Content (Join-Path $taskFolder "$taskStage-result.json") -Raw | ConvertFrom-Json
+            if (-not $taskResult.ok) { throw $taskResult.error }
+            Write-Output "Local portal $taskStage verified: $($taskResult.checks) checks"
+          }
       - run: dotnet publish -c Release -r win-x64 --self-contained true -o artifacts/server/windows-x64
       - run: pnpm run build:win
         working-directory: desktop

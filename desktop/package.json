@@ -1,6 +1,6 @@
 {
   "name": "cfc-plus-desktop",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "CFC+ — gestão de autoescolas conectada ao servidor",
   "author": "zionLab7",
   "private": true,
@@ -24,6 +24,10 @@
     "files": [
       "main.cjs",
       "preload.cjs",
+      "portal-preload.cjs",
+      "local-portals.cjs",
+      "portal-navigation.cjs",
+      "build/icon.ico",
       "settings.cjs",
       "server.cjs",
       "setup.html",

@@ -17,6 +17,7 @@ if (args.FirstOrDefault() == "--import-infor")
     return;
 }
 
+if(args.FirstOrDefault()=="--device-diagnostics"){Console.WriteLine(JsonSerializer.Serialize(DeviceDiagnostics.Read()));return;}
 if(args.FirstOrDefault()=="--create-import-fixture"){CommercialChecks.CreateFixture(args[1]);return;}
 if(args.FirstOrDefault()=="--self-test-finance"){await FinanceChecks.Run();return;}
 if(args.FirstOrDefault()=="--self-test-commercial"){CommercialChecks.Run();return;}
@@ -113,7 +114,7 @@ var shellStaticFiles=new StaticFileOptions{OnPrepareResponse=ctx=>
 }};
 app.UseDefaultFiles(); app.UseStaticFiles(shellStaticFiles); app.UseAuthentication(); app.UseAuthorization(); app.UseRateLimiter();
 if(central){app.UseTenantSelection();app.MapPlatform();}
-app.MapGet("/api/health", () => new { status = "ok", application="cfc-plus", version = "0.4.0", central, demo=!central&&!CommercialInstallation.Enabled(builder.Configuration)&&!app.Services.GetRequiredService<Store>().IsReal });
+app.MapGet("/api/health", () => new { status = "ok", application="cfc-plus", version = "0.4.1", central, demo=!central&&!CommercialInstallation.Enabled(builder.Configuration)&&!app.Services.GetRequiredService<Store>().IsReal });
 app.MapGet("/api/auth/units",(Store store)=>Results.Ok(store.LoginUnits()));
 app.MapPost("/api/auth/login", async (HttpContext ctx, Store store, JsonElement body) =>
 {
@@ -143,7 +144,7 @@ app.MapPost("/api/auth/password",async(HttpContext ctx,Store store,JsonElement b
  if(u.Id=="admin"){var initial=Path.Combine(store.DataRoot,"first-access.json");if(File.Exists(initial))File.Delete(initial);}
  await ctx.SignOutAsync();return Results.Ok(new{loginRequired=true});
 }).RequireAuthorization().RequireRateLimiting("login");
-app.MapGet("/api/distribution",(HttpContext ctx)=>Results.Ok(central?new{central=true,commercial=true,schoolName="CFC+",version="0.4.0",portal="/portal/",install="/install/",desktop=File.Exists(Path.Combine(dataDir,"downloads","CFC-Plus-Windows.exe"))?"/api/distribution/windows":"",support=builder.Configuration["CFC_SUPPORT_EMAIL"]??""}:CommercialInstallation.Public(builder.Configuration)));
+app.MapGet("/api/distribution",(HttpContext ctx)=>Results.Ok(central?new{central=true,commercial=true,schoolName="CFC+",version="0.4.1",portal="/portal/",install="/install/",desktop=File.Exists(Path.Combine(dataDir,"downloads","CFC-Plus-Windows.exe"))?"/api/distribution/windows":"",support=builder.Configuration["CFC_SUPPORT_EMAIL"]??""}:CommercialInstallation.Public(builder.Configuration)));
 app.MapGet("/api/distribution/windows",()=>{var file=Path.Combine(dataDir,"downloads","CFC-Plus-Windows.exe");return File.Exists(file)?Results.File(file,"application/vnd.microsoft.portable-executable","CFC-Plus-Windows.exe",enableRangeProcessing:true):Results.NotFound(new{error="O instalador será disponibilizado pelo responsável da plataforma."});});
 app.MapGet("/api/system/imports",async(HttpContext ctx,Store store,ImportQueue queue)=>Results.Ok(queue.List(await Current(ctx,store)))).RequireAuthorization();
 app.MapPost("/api/system/imports",async(HttpContext ctx,Store store,ImportQueue queue,JsonElement body)=>Results.Ok(await queue.Create(await Current(ctx,store),body.GetProperty("name").GetString()??"",body.GetProperty("bytes").GetInt64()))).RequireAuthorization();
@@ -249,6 +250,18 @@ app.MapGet("/api/browser/profiles", async (HttpContext ctx, Store store, Profess
 {
     var u = await Current(ctx, store); if (u.Role is "Aluno" or "Instrutor") throw new RuleException("Acesso restrito à equipe.", 403);
     return Results.Ok(new { profiles = await store.Profiles(), browser = browser.Availability(),sessions=await sessions.ProfessionalOverview(),preferences=registry.Read(),serverOwnsSessions=true });
+}).RequireAuthorization();
+app.MapPost("/api/browser/local-access", async (HttpContext ctx, Store store, JsonElement body) =>
+{
+    var u = await Current(ctx, store); StudentResources.Team(u);
+    var profileId=body.GetProperty("profileId").GetString()??"";
+    var portal=body.GetProperty("portal").GetString()??"";
+    var profile=(await store.Profiles()).Find(x=>x.Id==profileId)??throw new RuleException("Perfil não encontrado.",404);
+    if(!Guid.TryParseExact(profile.Id,"N",out _)||profile.Kind is not("Diretor" or "Instrutor"))throw new RuleException("Escolha um perfil profissional.",403);
+    var url=ProfessionalBrowser.Portal(portal);
+    var op=ctx.Request.Headers["X-Operation-Id"].ToString();if(!Guid.TryParse(op,out _))throw new RuleException("Operação sem identificador válido.");
+    await store.Mutate(u.Id,op+":local-browser",profile.Id+":"+portal,s=>{s.Audit.Add(new(){Id=Operations.Id(),User=u.Name,Action="local-browser-open",Detail=profile.Name+" · "+portal+" · computador do atendimento",Date=Operations.Now.ToString("s")});return new{ok=true};});
+    return Results.Ok(new{schoolId=ctx.User.FindFirstValue("cfc-school")??"",profile=new{profile.Id,profile.Name,profile.Kind},url});
 }).RequireAuthorization();
 app.MapPost("/api/browser/open", async (HttpContext ctx, Store store, ProfessionalBrowser browser, PortalSessions sessions, JsonElement body) =>
 {

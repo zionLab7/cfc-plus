@@ -3,6 +3,9 @@ on:
   push:
     tags: ['v*']
   workflow_dispatch:
+concurrency:
+  group: cfc-versioned-publish
+  cancel-in-progress: false
 permissions:
   contents: read
   packages: write
@@ -14,6 +17,10 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tools/PilotStackChecks.cjs
       - run: dotnet build --nologo
       - run: dotnet bin/Debug/net10.0/CfcPilot.dll --self-test-finance
       - run: dotnet bin/Debug/net10.0/CfcPilot.dll --self-test-commercial
@@ -46,3 +53,59 @@ jobs:
           target: browser
           push: true
           tags: ghcr.io/${{ steps.version.outputs.owner }}/cfc-plus:${{ steps.version.outputs.value }}-browser
+
+  windows-release:
+    needs: publish
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+        working-directory: desktop
+      - run: node node_modules/electron/install.js
+        working-directory: desktop
+      - run: node --test tests/*.test.cjs
+        working-directory: desktop
+      - name: Verify local Windows portal persistence
+        shell: pwsh
+        run: |
+          $taskFolder = Join-Path $env:RUNNER_TEMP ("cfc-local-" + [guid]::NewGuid().ToString("N"))
+          $taskRuntime = Join-Path $pwd "desktop/node_modules/electron/dist/electron.exe"
+          foreach ($taskStage in @("seed", "restore")) {
+            $taskProcess = Start-Process -FilePath $taskRuntime -ArgumentList @("tools/LocalPortalChecks.cjs", $taskFolder, $taskStage) -WindowStyle Hidden -PassThru -Wait
+            if ($taskProcess.ExitCode -ne 0) { throw "Local portal $taskStage failed" }
+            $taskResult = Get-Content (Join-Path $taskFolder "$taskStage-result.json") -Raw | ConvertFrom-Json
+            if (-not $taskResult.ok) { throw $taskResult.error }
+            Write-Output "Local portal $taskStage verified: $($taskResult.checks) checks"
+          }
+      - run: dotnet publish -c Release -r win-x64 --self-contained true -o artifacts/server/windows-x64
+      - run: pnpm run build:win
+        working-directory: desktop
+      - name: Publish Windows installer and checksum
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          [xml]$taskProject = Get-Content CfcPilot.csproj
+          $taskVersion = $taskProject.Project.PropertyGroup.Version
+          $taskTag = "v$taskVersion"
+          $taskInstaller = Get-Item "artifacts/desktop/CFC-Plus-Instalador-$taskVersion-x64.exe"
+          $taskChecksum = "$($taskInstaller.FullName).sha256"
+          $taskHash = (Get-FileHash $taskInstaller.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$taskHash  $($taskInstaller.Name)" | Set-Content $taskChecksum -Encoding ascii
+          gh release view $taskTag --repo $env:GITHUB_REPOSITORY --json tagName
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $taskTag --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "CFC+ $taskVersion - piloto GP" --notes "Cliente Windows x64 e imagem de servidor do piloto. Consulte docs/PORTAINER_PILOTO_GP.md antes de instalar. Perfis locais persistentes e seleção de certificado disponíveis; captura biométrica e homologação de equipamentos ainda exigem validação. Instalador ainda sem assinatura comercial."
+            if ($LASTEXITCODE -ne 0) { throw "Could not create release" }
+          }
+          # Refuse overwriting a version already distributed.
+          gh release upload $taskTag $taskInstaller.FullName $taskChecksum --repo $env:GITHUB_REPOSITORY
+          if ($LASTEXITCODE -ne 0) { throw "Could not upload installer; use a new version instead of overwriting assets" }

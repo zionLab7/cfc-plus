@@ -1,13 +1,14 @@
 # CFC+ — plataforma central de autoescolas
 
-Versão 0.4.0: um servidor .NET 10 e um único app web/PWA para todas as autoescolas. Cada escola tem um ID, banco SQLite, anexos, configuração Evolution e perfis governamentais próprios. As filiais têm subIDs (unitId) dentro da escola. Entrar com ID da escola + usuário + senha determina o contexto no servidor; aluno e instrutor seguem para o portal pessoal.
+Versão 0.4.1: um servidor .NET 10 e um único app web/PWA para todas as autoescolas. Cada escola tem um ID, banco SQLite, anexos, configuração Evolution e perfis governamentais próprios. As filiais têm subIDs (unitId) dentro da escola. Entrar com ID da escola + usuário + senha determina o contexto no servidor; aluno e instrutor seguem para o portal pessoal.
 
 O repositório público contém somente código e fixtures sintéticas. Bancos, documentos, exports, credenciais e sessões da GP permanecem privados.
 
 ## Implantação central
 
-Use UMA stack no Portainer Docker Standalone, com Traefik, domínio central HTTPS e volume persistente. Consulte [implantação](docs/IMPLANTACAO.md).
+Use UMA stack no Portainer Docker Standalone, com Traefik, domínio central HTTPS e volume persistente. Para o teste da GP em KVM 2, siga o [guia completo do Portainer e Windows](docs/PORTAINER_PILOTO_GP.md). Consulte também [implantação](docs/IMPLANTACAO.md).
 
+- infra/production/compose.pilot.yaml: stack única do piloto com app, navegador, Evolution, PostgreSQL da Evolution e Redis; reutiliza Traefik existente e incorpora seccomp.
 - infra/production/compose.yaml: gestão e portais.
 - infra/production/compose.browser.yaml: também inclui navegador interativo Linux/Xvfb, cookies persistentes e sandbox Chromium. Exige o perfil seccomp no host.
 

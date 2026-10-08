@@ -21,3 +21,7 @@ Uma conta ativa por origem no mesmo perfil do navegador. Para administrar escola
 A gestão pode guardar algumas operações offline, vinculadas à escola e ao usuário de origem. Elas só são confirmadas após validação no servidor ao reconectar. Portais, documentos e consultas externas precisam de conexão; cache da PWA não é acesso irrestrito aos dados de qualquer escola. Não compartilhe usuário pessoal nem máquina sem bloqueio.
 
 O instalador ainda precisa de assinatura de código comercial para distribuição definitiva. Não instrua clientes a desativar proteção do Windows. Dados e credenciais nunca são incluídos no instalador ou na imagem Docker.
+
+## Equipamentos locais no piloto 0.4.1
+
+No instalador Windows, Integrações → Ver profissionais → Abrir neste computador mantém o perfil do profissional neste Windows e usa o certificado disponibilizado pelo middleware local. Abrir no servidor mantém o fluxo anterior na VPS. São sessões independentes; o app não transporta USB nem cookies entre máquinas. O ícone da bandeja mantém portais locais ocultos ao fechar a janela; Sair do CFC+ encerra o processo preservando o perfil. Na próxima abertura, cookies ainda válidos podem ser retomados. Captura/validação Hamster III ainda depende de SDK e fluxo homologado. O diagnóstico local não captura digitais. Siga o [guia do piloto GP](PORTAINER_PILOTO_GP.md), inclusive o caminho de download em Releases.

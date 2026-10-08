@@ -29,7 +29,7 @@ public static class CommercialInstallation
         Write(Path.Combine(root,"active-database.json"),new{path=Path.GetFileName(target),importId="school-"+id});
     }
     internal static void Write(string p,object data){var temp=p+"."+Guid.NewGuid().ToString("N")+".tmp";File.WriteAllText(temp,JsonSerializer.Serialize(data,Store.Json));if(!OperatingSystem.IsWindows())File.SetUnixFileMode(temp,UnixFileMode.UserRead|UnixFileMode.UserWrite);File.Move(temp,p,true);}
-    public static object Public(IConfiguration c)=>new{commercial=Enabled(c),schoolName=c["CFC_SCHOOL_NAME"]??"CFC+",version="0.4.0",portal="/portal/",install="/install/",desktop=File.Exists(Path.Combine(c["CFC_DATA_DIR"]??"App_Data","downloads","CFC-Plus-Windows.exe"))?"/api/distribution/windows":"",support=c["CFC_SUPPORT_EMAIL"]??""};
+    public static object Public(IConfiguration c)=>new{commercial=Enabled(c),schoolName=c["CFC_SCHOOL_NAME"]??"CFC+",version="0.4.1",portal="/portal/",install="/install/",desktop=File.Exists(Path.Combine(c["CFC_DATA_DIR"]??"App_Data","downloads","CFC-Plus-Windows.exe"))?"/api/distribution/windows":"",support=c["CFC_SUPPORT_EMAIL"]??""};
     public static void RequireAdmin(User u){if(u.Role!="Administrador")throw new RuleException("Somente o administrador gerencia esta instalação.",403);}
     public static bool Empty(Store s){if(s.DatabasePath==null)return false;using var db=Database.Open(s.DatabasePath,true);return Database.Count(db,"SELECT count(*) FROM entities WHERE kind NOT IN ('Users','Units','Templates','Audit')")==0;}
 }
