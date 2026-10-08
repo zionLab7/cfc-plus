@@ -79,6 +79,7 @@ public sealed class RelationalStore
             var eid = B("enrollmentId");
             if (eid != "") sid = Database.Scalar(db, "SELECT student_id FROM entities WHERE kind='Enrollments' AND id=$0", eid);
             if (B("studentId") != "") sid = B("studentId");
+            if(scope.Action=="user"&&B("role")=="Aluno")sid=B("linkedId");
             var targetKind = scope.Action switch { "student" => "Students", "lesson" or "lesson-status" => "Lessons", "exam-result" => "Exams", "void" => "Entries", "enroll" => "Students", _ => "" };
             if (B("id") != "" && targetKind != "") sid = Database.Scalar(db, "SELECT student_id FROM entities WHERE kind=$0 AND id=$1", targetKind, B("id"));
             var start = B("start");
@@ -112,7 +113,7 @@ public sealed class RelationalStore
         s.Exams = List<Exam>(db, "Exams", scope.Mutation || sid != "" ? "student_id=$0" : "date >= $1 AND date < $2 AND ($3='' OR unit_id=$3)", sid, scope.From, scope.To, scope.UnitId);
         s.Installments = List<Installment>(db, "Installments", sid != "" ? "student_id=$0" : "id IN(SELECT id FROM entities WHERE kind='Installments' AND ($1='' OR unit_id=$1) AND json_extract(json,'$.status')='Aberta' ORDER BY date LIMIT 100)", sid, scope.UnitId);
         s.Documents = List<Document>(db, "Documents", sid != "" ? "student_id=$0" : "id IN(SELECT id FROM entities WHERE kind='Documents' ORDER BY date DESC LIMIT 50)", sid);
-        if (scope.Action == "closecash") s.Entries = List<Entry>(db, "Entries", "unit_id=$0 AND date >= $1 AND json_extract(json,'$.closed')=0 AND json_extract(json,'$.kind') IN('Recebimento','Receita','Despesa','Estorno')", scope.Body.GetProperty("unitId").GetString(), Operations.Today);
+        if (scope.Action == "closecash") {s.Entries = List<Entry>(db, "Entries", "unit_id=$0 AND date >= $1 AND json_extract(json,'$.closed')=0 AND json_extract(json,'$.kind') IN('Recebimento','Receita','Despesa','Estorno')", scope.Body.GetProperty("unitId").GetString(), Operations.Today);s.Entries.AddRange(List<Entry>(db,"Entries","json_extract(json,'$.kind')='Crédito' AND id IN(SELECT json_extract(json,'$.reverses') FROM entities WHERE kind='Entries' AND unit_id=$0 AND date>=$1)",scope.Body.GetProperty("unitId").GetString(),Operations.Today));}
         if (!scope.Mutation) Statistics(db, s, scope);
         return s;
     }

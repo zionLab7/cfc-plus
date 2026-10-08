@@ -1,5 +1,6 @@
 /*
 !.gitignore
+!.gitattributes
 !.dockerignore
 !Program.cs
 !CfcPilot.csproj
@@ -41,6 +42,7 @@ packaging/*
 tests/*
 !tests/integration.mjs
 !tests/commercial-http.mjs
+!tests/central-http.mjs
 !tests/fixtures/
 tests/fixtures/*
 !tests/fixtures/legacy-schema.json

@@ -1,4 +1,4 @@
-# One Portainer Docker Standalone stack for each school. No database or browser port is public.
+# One central Portainer Docker Standalone stack for ALL schools. Never run a second replica on this volume.
 services:
   app:
     image: ${CFC_BROWSER_IMAGE:?Define the tested browser image or digest}
@@ -8,14 +8,11 @@ services:
     tmpfs:
       - /tmp:rw,nosuid,size=256m
     environment:
-      CFC_SCHOOL_ID: ${CFC_SCHOOL_ID:?Use a unique lowercase school identifier}
-      CFC_SCHOOL_NAME: ${CFC_SCHOOL_NAME:?Define the school name}
+      CFC_MULTI_TENANT: "true"
+      CFC_CENTRAL_BROWSER_PROFILES: ${CFC_CENTRAL_BROWSER_PROFILES:-12}
       CFC_SUPPORT_EMAIL: ${CFC_SUPPORT_EMAIL:-}
       CFC_TRUSTED_PROXY: ${TRAEFIK_IP:?Define the actual Traefik IP on the proxy network}
-      AllowedHosts: ${CFC_DOMAIN:?Define the school hostname};localhost;127.0.0.1
-      Evolution__BaseUrl: ${EVOLUTION_BASE_URL:-}
-      Evolution__Instance: ${EVOLUTION_INSTANCE:-}
-      Evolution__ApiKey: ${EVOLUTION_API_KEY:-}
+      AllowedHosts: ${CFC_DOMAIN:?Define the central hostname};localhost;127.0.0.1
       CFC_ADMIN_LOGIN: ${CFC_ADMIN_LOGIN:-admin}
       NativePortal__MaxProfiles: ${CFC_BROWSER_PROFILES:-6}
       DOTNET_GCHeapHardLimitPercent: "70"
@@ -26,8 +23,8 @@ services:
     security_opt:
       - seccomp=${CHROMIUM_SECCOMP_PATH:?Install the Chromium seccomp profile on the Docker host}
     shm_size: 1gb
-    mem_limit: ${CFC_MEMORY_LIMIT:-4g}
-    cpus: ${CFC_CPUS:-2.0}
+    mem_limit: ${CFC_MEMORY_LIMIT:-16g}
+    cpus: ${CFC_CPUS:-6.0}
     pids_limit: 512
     stop_grace_period: 45s
     logging:
@@ -38,14 +35,14 @@ services:
     labels:
       traefik.enable: "true"
       traefik.docker.network: ${TRAEFIK_NETWORK:-cfc-proxy}
-      traefik.http.routers.cfc-${CFC_SCHOOL_ID}.rule: Host(`${CFC_DOMAIN}`)
-      traefik.http.routers.cfc-${CFC_SCHOOL_ID}.entrypoints: websecure
-      traefik.http.routers.cfc-${CFC_SCHOOL_ID}.tls: "true"
-      traefik.http.routers.cfc-${CFC_SCHOOL_ID}.tls.certresolver: ${TRAEFIK_CERTRESOLVER:-letsencrypt}
-      traefik.http.services.cfc-${CFC_SCHOOL_ID}.loadbalancer.server.port: "8080"
+      traefik.http.routers.cfc-central.rule: Host(`${CFC_DOMAIN}`)
+      traefik.http.routers.cfc-central.entrypoints: websecure
+      traefik.http.routers.cfc-central.tls: "true"
+      traefik.http.routers.cfc-central.tls.certresolver: ${TRAEFIK_CERTRESOLVER:-letsencrypt}
+      traefik.http.services.cfc-central.loadbalancer.server.port: "8080"
 volumes:
   data:
-    name: ${CFC_DATA_VOLUME:-cfc-${CFC_SCHOOL_ID}-data}
+    name: ${CFC_DATA_VOLUME:-cfc-central-data}
 networks:
   proxy:
     external: true

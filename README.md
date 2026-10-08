@@ -1,45 +1,47 @@
-# CFC+ — plataforma de gestão de autoescolas
+# CFC+ — plataforma central de autoescolas
 
-Servidor .NET 10, interface web/PWA e cliente Windows Electron. A versão 0.3.0 inclui instalação comercial vazia, isolamento por autoescola, portais de aluno/instrutor, agenda, financeiro, anexos protegidos, configuração administrativa e importação conferida de exports Infor SQL/CSV.
+Versão 0.4.0: um servidor .NET 10 e um único app web/PWA para todas as autoescolas. Cada escola tem um ID, banco SQLite, anexos, configuração Evolution e perfis governamentais próprios. As filiais têm subIDs (unitId) dentro da escola. Entrar com ID da escola + usuário + senha determina o contexto no servidor; aluno e instrutor seguem para o portal pessoal.
 
-Cada cliente usa seu domínio, processo e volume. Filiais da mesma autoescola compartilham a instalação. O repositório contém código e fixtures sintéticas; não contém banco, exportação, documentos, senhas ou sessões da GP.
+O repositório público contém somente código e fixtures sintéticas. Bancos, documentos, exports, credenciais e sessões da GP permanecem privados.
 
-## Implantar
+## Implantação central
 
-Leia [o guia de implantação](docs/IMPLANTACAO.md). Há duas stacks para Portainer Docker Standalone:
+Use UMA stack no Portainer Docker Standalone, com Traefik, domínio central HTTPS e volume persistente. Consulte [implantação](docs/IMPLANTACAO.md).
 
-- `infra/production/compose.yaml`: gestão e portais sem navegador governamental.
-- `infra/production/compose.browser.yaml`: stack completa com navegador interativo no Linux e sessões persistentes. Exige o perfil seccomp no host, conforme o guia. Não usa contêiner privilegiado, CDP/WebDriver para o login nem desativa o sandbox Chromium.
+- infra/production/compose.yaml: gestão e portais.
+- infra/production/compose.browser.yaml: também inclui navegador interativo Linux/Xvfb, cookies persistentes e sandbox Chromium. Exige o perfil seccomp no host.
 
-As imagens são geradas pelo [Dockerfile](Dockerfile). O workflow `Publish versioned images` publica versões no GHCR mediante tag ou execução manual. O workflow `Verify` verifica aplicação, importação sintética e navegador Linux, além de produzir o instalador Windows.
+CFC_MULTI_TENANT=true habilita o modo central; as imagens Docker já usam esse padrão. /platform/ é o painel do dono da plataforma para criar IDs de escolas sem novo deploy. / é a gestão, /portal/ é o portal pessoal e /install/ explica a instalação.
 
-## Para os usuários
+## Financeiro
 
-Cada autoescola divulga seu endereço HTTPS. O aluno e instrutor entram e são direcionados ao próprio portal. Gerentes, atendentes e administradores acessam a gestão. O guia `/install/` explica como instalar no Android, iPhone, tablet, Windows, Mac e Linux. A primeira senha comercial precisa ser substituída pelo titular. A escola cria acessos vinculados às fichas; não existe cadastro público livre.
+A ficha mostra débitos, dinheiro efetivamente pago, créditos/descontos, saldo em aberto, vencido e a vencer. Permite recebimento parcial numa parcela específica, geração de recibo e estorno com histórico preservado. Divergências entre extrato e parcelas importadas aparecem para conciliação.
 
-## Importar depois de publicar
+O financeiro geral separa caixa do período e carteira atual de todas as datas, permite filtro por filial, lista prioridades de cobrança e oferece extrato paginado e CSV da página. Estornos de desconto não reduzem caixa; crédito de um aluno não compensa dívida de outro.
 
-Em **Instalação e importação**, o administrador envia um ZIP com a pasta `01_BANCO_DE_DADOS_COMPLETO`, SQL/CSV pareados e inventário. O envio é retomável; a conferência roda em processo separado e mantém a base ativa disponível. Depois da revisão, uma instalação vazia pode ativar o resultado e reiniciar. Bases já operacionais não são substituídas pela interface.
+## Importar e distribuir
 
-[Formato, revisão e recuperação da importação](docs/IMPORTACAO.md).
+Cada administrador importa somente na sua escola pelo menu Instalação e importação. A conferência roda em staging e a ativação exige base vazia. Recarrega somente a escola afetada; os demais clientes continuam atendidos. [Formato e recuperação](docs/IMPORTACAO.md).
 
-## Desenvolvimento e verificação
+Todos instalam o mesmo app e recebem ID, usuário e senha da escola. [Celular, portal e cliente Windows](docs/USO_E_DISTRIBUICAO.md).
 
-Requisitos: SDK .NET 10, Node 22.12+ para testes/cliente; Docker Linux para validar implantação. O modo padrão de desenvolvimento usa somente dados fictícios se o diretório de dados estiver vazio. Nunca configure desenvolvimento no volume de um cliente.
+## Desenvolvimento e testes
 
-```sh
+SDK .NET 10, Node 22.12+ e Docker Linux. Modo padrão sem CFC_MULTI_TENANT mantém a demonstração sintética; use um diretório vazio de teste.
+
+~~~sh
 dotnet build
+dotnet bin/Debug/net10.0/CfcPilot.dll --self-test-finance
 dotnet bin/Debug/net10.0/CfcPilot.dll --self-test-commercial
 dotnet bin/Debug/net10.0/CfcPilot.dll --self-test-community
+node tests/central-http.mjs
 node tests/commercial-http.mjs
 node tests/integration.mjs
 CFC_TEST_RELATIONAL=1 node tests/integration.mjs
-```
+~~~
 
-O cliente Windows usa `desktop/pnpm-lock.yaml`. Execute `corepack enable` e `pnpm install --frozen-lockfile --ignore-scripts`, `node node_modules/electron/install.js`, publique o servidor em `artifacts/server/windows-x64` e execute `pnpm run build:win` dentro de `desktop`.
+O teste central verifica duas escolas com o mesmo login/senha e CPF, filiais, credenciais protegidas, importações, financeiro, acesso pessoal, concorrência e reinício. Os testes usam apenas fixtures sintéticas. Verify gera também o instalador Windows; Publish versioned images publica no GHCR por tag ou execução manual após validação. A versão de imagem nos exemplos precisa estar publicada ou construída antes do deploy.
 
-## Operação e limites
+Para desenvolver centralmente em localhost, configure CFC_MULTI_TENANT=true, CFC_DATA_DIR num diretório de teste, ASPNETCORE_ENVIRONMENT=Development e CFC_ALLOW_LOCAL_HTTP=true. A exceção HTTP só vale para loopback em Development; não habilita HTTP público em produção.
 
-[Uso e distribuição](docs/USO_E_DISTRIBUICAO.md), [capacidade e expansão](docs/ESCALA.md), [backup e segurança](docs/OPERACAO.md).
-
-A implantação Docker foi validada localmente com dados sintéticos. Publicação na VPS, DNS, certificado HTTPS e login GOV.BR real nesse servidor precisam de validação no ambiente definitivo. Registro interno de aula não confirma aula no DETRAN. Tokens e biometria físicos ainda dependem de homologação e do componente local de hardware; não são acessíveis automaticamente pela VPS. Algumas tabelas legadas têm consulta integral, sem editor específico. Mensagens push, publicação em App Store/Google Play e migração para PostgreSQL não estão implementadas nesta versão.
+[Operação e backups](docs/OPERACAO.md) · [Capacidade e evolução](docs/ESCALA.md)

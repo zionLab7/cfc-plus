@@ -1,25 +1,19 @@
-# Capacidade e expansão
+# Capacidade e evolução da plataforma central
 
-A arquitetura atual é uma instância isolada por autoescola, com SQLite em disco local, índices, consultas por pessoa/período e listagens paginadas. O aluno/instrutor usa consultas próprias, sem carregar diretório global nem credenciais da equipe. A agenda evita uma consulta adicional por aluno ao montar o período. A importação fica em outro processo e tem só um worker por escola. Sessões interativas possuem limite de perfis configurável.
+A versão 0.4 tem uma instância central e bancos SQLite independentes por escola. Escritas em escolas diferentes não compartilham o semáforo do Store. Consultas usam índices e páginas, e os totais financeiros são calculados sobre o conjunto completo no servidor. O cadastro de mais escolas não cria outro deploy. Fila e seleção offline são vinculadas à escola/usuário.
 
-O teste local de 30 consultas concorrentes à base **vazia e sintética** teve p95 de 56 ms. Esse dado é apenas uma medição de referência do desenvolvimento; não dimensiona a base completa nem garante desempenho em uma VPS. O resultado é reproduzível por `node tests/commercial-http.mjs`, que grava um relatório sem dados reais.
+node tests/central-http.mjs mede consultas concorrentes a duas escolas SINTÉTICAS e grava p95. Esse teste comprova isolamento e recuperação, mas não dimensiona uma base real nem garante capacidade de VPS. Não use quantidade de escolas/alunos sozinha como medida: usuários simultâneos, documentos, importações e navegadores abertos dominam o consumo.
 
-## Começar
+## Homologação
 
-Uma VPS Linux com CPU dedicada, NVMe e boa latência para São Paulo é a base. A estimativa anterior de 8 vCPU, 32 GB RAM e 200 GB NVMe pode servir para começar a homologação, mas a quantidade de escolas depende de pessoas conectadas, tamanho de cada base e perfis de navegador abertos. Reserve recursos para Linux, Traefik, Portainer e backup; não divida toda a RAM entre contêineres.
+Comece medindo uma VPS Linux com CPU dedicada e NVMe na região adequada. O exemplo da stack reserva 6 CPUs/16 GB para a aplicação central; o host precisa de margem para Linux, Traefik, Portainer, Evolution e backups. Ajuste após teste com o export autorizado, buscas, agenda, ficha e financeiro reais. Esses valores são ponto de homologação, não promessa de capacidade ou recomendação de fornecedor.
 
-A stack sugere limite inicial de 2 CPUs e 4 GB por escola; isso é uma configuração inicial para medir, não uma capacidade garantida. O modo com navegador deve ter orçamento maior conforme o número de sessões. Monitore o pico de RAM da importação de cada escola antes de ativar. O número de alunos sozinho não é uma boa unidade de capacidade.
+Importações: no máximo duas conferências em paralelo no servidor. Navegadores: padrão global 12 perfis e até 6 por escola, configuráveis. Feche perfis sem uso antes de aumentar limite; meça memória real de Chromium e pico das importações. O limite recusa nova abertura sem desalojar uma sessão em uso.
 
-## Roteiro de carga antes de vender
+Meça p50/p95, erros, CPU, RAM, disco e filas no pico previsto; teste documentos, navegador, queda/reconexão e restauração. Estabeleça metas de latência antes de comercializar. Aumentar limite de contêiner sem recursos no host não cria capacidade.
 
-1. Importe uma cópia autorizada da escola no ambiente de homologação.
-2. Meça busca, agenda diária/semanal, ficha, financeiro e portal com o número previsto de atendentes e alunos simultâneos.
-3. Teste também navegador, envio de documentos e importação fora do pico.
-4. Registre p50/p95, erros, CPU, memória, disco e crescimento dos arquivos. Estabeleça meta de atendimento e ajuste recursos até cumpri-la.
-5. Faça restauração, reinício e indisponibilidade de rede para conferir recuperação e fila offline.
+## Próxima escala
 
-## Mais clientes
+Agora há um único servidor escritor sobre o volume central. Mais de uma réplica exigirá evoluir o registro central, armazenamento e coordenação; não basta aumentar replicas no Compose. O caminho é PostgreSQL com resolução/autorização de tenant em todas as operações, filas externas, armazenamento de documentos e workers de browser com roteamento estável para o dono da sessão. Chaves e sessões precisam de armazenamento persistente e política de expiração.
 
-Provisione escola por escola com domínio/ID/volume exclusivos. Distribua as stacks entre VPS conforme medições; uma escola pesada pode ter VPS própria sem mudar o acesso dos demais clientes. Git/CI mantém uma versão comum do produto; dados nunca acompanham deploy de código.
-
-O banco atual não suporta escalar uma mesma escola com vários servidores escrevendo simultaneamente. Antes dessa necessidade, implemente migração para PostgreSQL com tenant e autorização em todas as consultas, armazenamento de documentos, workers/filas dedicados e testes de isolamento e carga. Nada disso está configurado automaticamente nesta versão. As sessões de navegador exigem roteamento estável ao worker que as possui, armazenamento persistente e tratamento de expiração; não devem ser distribuídas aleatoriamente por um balanceador.
+Podemos preservar o mesmo domínio e app ao separar esses serviços internamente. A distribuição por escola fica na infraestrutura/dados, sem exigir instalação/deploy por cliente. Essa evolução distribuída ainda não está implementada; primeiro valide a operação central e o perfil de carga real. Backups completos hoje têm janela de parada central; recuperação por escola e backups online consistentes são parte da evolução operacional.

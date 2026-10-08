@@ -11,6 +11,7 @@ public sealed class ImportUpload
 }
 public sealed class ImportQueue(Store store,IConfiguration config,IWebHostEnvironment env,ILogger<ImportQueue> logger):BackgroundService
 {
+    static readonly SemaphoreSlim Workers=new(2);
     readonly SemaphoreSlim gate=new(1);string Root=>CommercialInstallation.Root(config,env);string Jobs=>Path.Combine(Root,"import-queue");
     public const long MaxZip=512L*1024*1024,MaxExpanded=8L*1024*1024*1024,MaxFile=512L*1024*1024;public const int ChunkBytes=4*1024*1024;
     bool maintenance;public bool Maintenance=>maintenance;
@@ -58,7 +59,7 @@ public sealed class ImportQueue(Store store,IConfiguration config,IWebHostEnviro
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         Directory.CreateDirectory(Jobs);foreach(var d in Directory.GetDirectories(Jobs).Where(d=>File.Exists(Path.Combine(d,"status.json")))){var j=Read(Path.GetFileName(d));if(j.State is "Conferindo" or "Ativando"){j.State="Interrompida";j.Message="Conferência interrompida pelo reinício. A base anterior permanece ativa.";Save(j);}}
-        while(!stoppingToken.IsCancellationRequested){var j=Directory.GetDirectories(Jobs).Where(d=>File.Exists(Path.Combine(d,"status.json"))).Select(d=>Read(Path.GetFileName(d))).FirstOrDefault(j=>j.State=="Na fila");if(j!=null)await Run(j,stoppingToken);else await Task.Delay(1000,stoppingToken);}
+        while(!stoppingToken.IsCancellationRequested){var j=Directory.GetDirectories(Jobs).Where(d=>File.Exists(Path.Combine(d,"status.json"))).Select(d=>Read(Path.GetFileName(d))).FirstOrDefault(j=>j.State=="Na fila");if(j!=null){await Workers.WaitAsync(stoppingToken);try{await Run(j,stoppingToken);}finally{Workers.Release();}}else await Task.Delay(1000,stoppingToken);}
     }
     async Task Run(ImportUpload j,CancellationToken ct)
     {

@@ -10,6 +10,7 @@ public sealed class Store
     private readonly string path;
     private State? current;
     private readonly RelationalStore? database;
+    public string DataRoot=>Path.GetDirectoryName(path)!;
     public bool IsReal => database != null;
     public string? DatabasePath => database?.Path;
     public async Task<Student?> StudentById(string id) => database != null ? database.Get<Student>("Students",id) : (await Read()).Students.Find(x=>x.Id==id);

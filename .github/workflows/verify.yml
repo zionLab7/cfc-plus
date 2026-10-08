@@ -18,7 +18,9 @@ jobs:
         with:
           node-version: 22
       - run: dotnet build --nologo
+      - run: dotnet bin/Debug/net10.0/CfcPilot.dll --self-test-finance
       - run: dotnet bin/Debug/net10.0/CfcPilot.dll --self-test-commercial
+      - run: node tests/central-http.mjs
       - run: dotnet bin/Debug/net10.0/CfcPilot.dll --self-test-community
       - run: dotnet bin/Debug/net10.0/CfcPilot.dll --self-test-professional-sessions
       - run: node tests/commercial-http.mjs

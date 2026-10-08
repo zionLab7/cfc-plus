@@ -1,25 +1,23 @@
-# Operação, backup e recuperação
+# Operação do servidor central
 
-O volume contém SQLite, anexos, chaves de proteção, configurações privadas, histórico de importação e perfis/cookies do navegador. Dados e chaves precisam ser recuperados juntos. Não monte `/data` em diretório público nem em armazenamento de sincronização de arquivos. Não copie SQLite em uso por simples cópia de arquivo.
+O volume contém registro de escolas, conta do dono, chaves do servidor e tenants/<id> com SQLite, anexos protegidos, importações, configurações privadas e perfis/cookies. Preserve dados e chaves juntos. Use disco local/NVMe, sem OneDrive ou sincronização de arquivos. Nunca faça cópia simples de SQLite enquanto houver escrita.
 
-## Backup completo
+## Backup e recuperação
 
-`infra/production/backup.sh <school-id> <diretório-absoluto> [volume]` para a stack daquela escola, cria um tar privado de todo o volume e reinicia exatamente os contêineres parados. Execute em janela combinada; há indisponibilidade durante a cópia. O terceiro argumento atende instalações que usam `CFC_DATA_VOLUME` personalizado.
+infra/production/backup.sh central <diretório-absoluto> [volume] para exatamente os contêineres usando o volume central, cria tar privado de TODO o volume e reinicia os contêineres parados, inclusive se a cópia falhar. Padrão cfc-central-data. Há indisponibilidade de todas as escolas durante esse backup consistente: execute em janela planejada.
 
-O arquivo contém dados pessoais e chaves. Criptografe-o e mantenha cópia fora da VPS, com retenção definida e acesso restrito. O script não envia nem criptografa automaticamente o backup. Agende backup diário e teste recuperação antes de aceitar clientes reais.
+infra/production/restore.sh central <backup-absoluto> [novo-volume] recusa volume existente e restaura em volume NOVO. Configure CFC_DATA_VOLUME na única stack com esse novo volume após conferência. O registro e IDs de todas as escolas são preservados; mantenha o volume anterior para recuperação. Só restaure arquivos criados e confiáveis.
 
-`infra/production/restore.sh <school-id-original> <backup-absoluto> [novo-volume]` recusa volume existente e restaura em volume novo. Configure `CFC_DATA_VOLUME` com o novo nome e mantenha o `CFC_SCHOOL_ID` original. Verifique o conteúdo antes de trocar a stack para o volume recuperado. O volume anterior continua preservado. Só restaure backups criados e confiáveis; o script não substitui verificação de proveniência.
+O backup contém dados pessoais e chaves. Criptografe e armazene fora da VPS, com retenção e acesso restrito. Os scripts não fazem criptografia/envio automaticamente. Teste recuperação antes de clientes reais. Se usou --adopt-school com pasta externa ao volume, inclua também essa pasta num backup consistente e preserve a referência; os scripts do volume não alcançam diretórios externos.
 
 ## Monitoramento
 
-A stack tem healthcheck a cada 30 segundos e logs com limite de tamanho. Monitore também disco livre, memória, CPU, respostas 5xx e tempo de resposta. `unhealthy` é um alerta; o Docker Standalone não reinicia automaticamente um processo só porque o healthcheck falhou. A política `restart: unless-stopped` reinicia quando o processo encerra.
+Monitore healthcheck, erros 5xx, latência de busca/agenda/financeiro, CPU, RAM, disco e volume de filas. Healthcheck saudável indica processo disponível, não certifica cada integração externa. Docker Standalone não reinicia só por unhealthy; restart: unless-stopped cobre encerramento do processo.
 
-Uma importação é isolada do atendimento, mas compartilha os recursos da stack. Execute cargas grandes fora do pico e reserve disco/RAM. Reinício durante importação marca o job como Interrompida, preservando a base anterior. Não configure múltiplos workers nem múltiplas réplicas escrevendo o mesmo volume.
+Importações têm limite global de duas conferências e staging por escola. Limite global de navegadores CFC_CENTRAL_BROWSER_PROFILES e limite por escola CFC_BROWSER_PROFILES controlam aberturas. Expansão de ZIP, Electron e anexos consomem disco/RAM. Não configure múltiplos processos escritores no mesmo volume. Sessão GOV expirada exige reautenticação humana; persistência de perfil não garante login eterno.
 
-## Proteção e distribuição
+## Proteção
 
-Modo comercial exige HTTPS, cookies Secure/HttpOnly/SameSite, origem da operação e proxy explicitamente confiável. Senhas usam PBKDF2 e a troca revoga sessões antigas. Credenciais, anexos e checkpoints governamentais têm proteção existente baseada em chaves persistentes. Linux não usa DPAPI Windows: importar novamente o export gera proteção com as chaves da VPS. Uma cópia de arquivos protegidos via DPAPI não é migração suficiente.
+Produção exige HTTPS, cookie Secure/HttpOnly/SameSite e proxy explicitamente confiável. A escola é uma claim assinada da sessão; IDs/headers incompatíveis são recusados antes de resolver dados. Cada escola tem suas chaves para anexos e credenciais. Troca de senha revoga cookies antigos. No primeiro acesso, tanto dono quanto administrador trocam a senha inicial.
 
-Não publicar exports, `App_Data`, logs, arquivos de acesso inicial, tokens, certificados privados ou evidências com dados de alunos. A lista de publicação e o contexto Docker excluem esses materiais. Não conceder aos clientes acesso ao Portainer ou ao socket Docker para que usem o app.
-
-O instalador ainda não tem assinatura de código comercial. Sistemas Windows podem mostrar aviso de editor não reconhecido; adquirir e configurar assinatura deve fazer parte da distribuição comercial final. Não instrua clientes a desligar proteção do Windows.
+Linux não usa DPAPI Windows. Reimporte os dados e revalide recursos protegidos para migração. Não publique SQL/CSV, App_Data*, logs, credenciais, certificados ou evidências com dados pessoais. Não dê acesso Portainer/socket Docker aos usuários de escolas. O acesso ao dono /platform/ e aos arquivos iniciais é operacional e privado.

@@ -1,65 +1,46 @@
-# Implantação no Portainer, Docker e Traefik
+# Implantação central no Portainer, Docker e Traefik
 
-## Organização dos clientes
+## Organização
 
-Uma stack por autoescola: `cfc-escola-exemplo`. Cada uma tem `CFC_SCHOOL_ID` exclusivo, domínio próprio, volume próprio, banco SQLite, arquivos protegidos e sessões independentes. Filiais ficam na mesma stack. Não monte o mesmo volume em duas escolas nem execute duas réplicas do app sobre o mesmo SQLite. O servidor verifica a identidade do volume antes de iniciar.
+Uma stack cfc-central atende todas as escolas no mesmo domínio. O volume cfc-central-data contém o cadastro da plataforma e uma pasta tenants/<school-id> para cada escola, com banco e recursos próprios. Filiais são Units dentro desse banco, com IDs estáveis. Não é necessário criar domínio, contêiner ou deploy para cada cliente.
 
-Esta entrega usa Docker Standalone/Compose no Portainer. Não trate estas stacks como configuração pronta para Docker Swarm.
+Esta entrega usa Docker Standalone/Compose. Execute uma réplica: o registro central, SQLite e navegador persistente têm um dono por volume. Não monte esse volume em múltiplos servidores escritores nem trate a stack como configuração pronta para Swarm.
 
-## Imagens
+## Imagens e proxy
 
-O repositório público contém os workflows `Verify` e `Publish versioned images`. Após a verificação, crie a tag da versão ou execute o workflow de publicação. Ele produz:
+Após Verify aprovado, publique a versão por tag v0.4.0 ou execute Publish versioned images. As imagens são ghcr.io/zionlab7/cfc-plus:0.4.0 e :0.4.0-browser. A existência dos exemplos não significa que as imagens já foram publicadas. Pode construir na VPS:
 
-- `ghcr.io/zionlab7/cfc-plus:0.3.0`: gestão e portais.
-- `ghcr.io/zionlab7/cfc-plus:0.3.0-browser`: também inclui Electron/Chromium interativo e Xvfb.
+~~~sh
+docker build --target runtime -t cfc-plus:0.4.0 .
+docker build --target browser -t cfc-plus:0.4.0-browser .
+~~~
 
-São instruções de publicação, não indicação de que as imagens já estão no GHCR. A visibilidade do pacote GHCR é independente da do repositório. Se o pacote ficar privado, configure no Portainer uma credencial somente de leitura; se optar por pacote público, o pull dispensa essa credencial. Não coloque tokens no Compose, Git ou imagem. Prefira fixar o digest da imagem aprovada no ambiente real.
+Prefira o digest aprovado em produção. A visibilidade GHCR é independente da do repositório. O contexto Docker usa lista explícita de código e exclui dados de clientes.
 
-Para construir na VPS sem GHCR, clone o repositório público e use:
+Reutilize Traefik, rede, entrypoint websecure e certresolver existentes. Informe o IP real do proxy em TRAEFIK_IP. O exemplo traefik.yaml cria cfc-proxy em 172.30.0.0/24 e proxy em 172.30.0.2; ajuste conflitos de rede, ACME_EMAIL e DNS. Publique só 80/443. Não exponha browser, banco ou dashboard administrativo à internet.
 
-```sh
-docker build --target runtime -t cfc-plus:0.3.0 .
-docker build --target browser -t cfc-plus:0.3.0-browser .
-```
+## Criar a stack
 
-O build usa uma lista explícita de arquivos de código. Não copia `App_Data`, SQL/CSV de clientes nem o pacote de origem.
+1. Copie chromium-seccomp.json para /etc/cfcplus/chromium-seccomp.json no host Docker para usar Chromium com sandbox.
+2. Portainer → Stacks → Git repository → zionLab7/cfc-plus → main → infra/production/compose.browser.yaml. Para gestão sem GOV, use compose.yaml.
+3. Configure as variáveis de .env.example, incluindo domínio CENTRAL, imagem aprovada, proxy, volume e recursos.
+4. Confira o healthcheck e abra o endereço HTTPS central. O app não aceita cabeçalhos de proxy de qualquer origem nem login comercial por HTTP.
+5. Abra /platform/ e use o acesso inicial do arquivo privado /data/platform-first-access.json. O dono deve trocar essa senha antes de cadastrar escolas. Consulte o arquivo via console privada do contêiner no Portainer; não publique seu conteúdo.
+6. Cadastre ID e nome de cada escola no painel. A base é criada sem dados fictícios em /data/tenants/<id>. O acesso inicial admin fica em first-access.json dessa pasta. Entregue-o por canal privado ao administrador da escola; ele deve trocar a senha no primeiro acesso.
+7. O administrador cadastra suas filiais/equipe ou importa sua base em Instalação e importação. Todos acessam o mesmo endereço com o ID da escola e sua conta pessoal.
 
-## Traefik
+O cadastro só aceita ID de 3 a 48 caracteres: letra minúscula inicial, letras, dígitos e hífen. Login de ID desconhecido não cria escola. Alterar um header ou query não troca o banco de uma sessão assinada. O app vincula também cache, contexto do aluno e fila offline a escola + usuário.
 
-Se já há Traefik, reutilize sua rede, IP interno, entrypoint `websecure` e resolvedor de certificado. Informe o IP real em `TRAEFIK_IP`; o app só aceita cabeçalhos de proxy desse endereço e loopback. Não use configuração que confia em qualquer proxy.
+## WhatsApp e navegador
 
-Para uma VPS nova, `infra/production/traefik.yaml` cria a rede `cfc-proxy` em `172.30.0.0/24` e Traefik em `172.30.0.2`. Ajuste caso esse bloco conflite com redes existentes. Configure `ACME_EMAIL`, aponte DNS para a VPS e publique somente 80/443. O dashboard não é exposto. O socket Docker só é montado no proxy, não no app; operadores do Traefik têm acesso sensível ao host.
+Configure Evolution em Integrações DE CADA ESCOLA, usando instância exclusiva. As configurações privadas ficam no diretório dela. O modo central não herda uma chave/instância global para todos os clientes. Evolution e seu PostgreSQL são serviço privado separado, com backups próprios.
 
-## Stack completa com sessões
+CFC_BROWSER_PROFILES limita perfis por escola; CFC_CENTRAL_BROWSER_PROFILES limita o total no servidor (padrão 12). O limite recusa novas aberturas com mensagem clara; não encerra uma sessão ocupada automaticamente. Aumente conforme medição de RAM/CPU. Cookies/perfis persistentes são próprios de cada escola/profissional; GOV/DETRAN podem expirar a autenticação e exigir nova verificação humana.
 
-1. No host Docker, copie `infra/production/chromium-seccomp.json` para `/etc/cfcplus/chromium-seccomp.json`, legível pelo Docker. O perfil da Microsoft acrescenta as permissões de namespaces necessárias ao sandbox; não é `seccomp=unconfined`.
-2. No Portainer → Stacks → Add stack → Git repository, escolha o repositório, `main` e Compose path **`infra/production/compose.browser.yaml`**. Também pode colar o arquivo no Web editor.
-3. Carregue as variáveis do exemplo `infra/production/.env.example`, substituindo domínio, escola e imagem. Nunca deixe `escola-teste` ou domínios de exemplo em produção. Configure `CHROMIUM_SECCOMP_PATH` com o caminho absoluto no host Docker.
-4. Ajuste `CFC_MEMORY_LIMIT`, `CFC_CPUS` e `CFC_BROWSER_PROFILES` à capacidade medida. O padrão de perfis é seis. Não publique portas do browser nem da base. A stack usa 1 GB de memória compartilhada interna para o Chromium.
-5. Deploy. Confirme status saudável e abra o domínio HTTPS. O app recusa APIs comerciais por HTTP. Se houver erro de origem/HTTPS, confira `TRAEFIK_IP` em vez de remover a verificação.
+## Atualizações e Windows
 
-Para operar sem sessões governamentais, escolha **`infra/production/compose.yaml`** e `CFC_IMAGE`. Não precisa do perfil seccomp nesse modo.
+Atualize UMA imagem central após backup e homologação. Não habilite deploy automático de cada commit no ambiente com alunos reais. O workflow Verify produz o instalador Windows compartilhado. Publique o .exe aprovado em /data/downloads/CFC-Plus-Windows.exe; o mesmo instalador serve a todas as escolas e conecta ao domínio central.
 
-## Primeiro administrador
+Para adotar uma base operacional já existente no piloto, o operador do servidor pode usar --adopt-school <id> --school-name <nome> --legacy-data <pasta-existente> com modo central. Esse comando preserva a pasta/chaves existentes e não é exposto pela API. Backups dessa exceção precisam incluir a pasta externa referenciada. Na VPS nova, prefira importação pelo app em tenants/<id>; DPAPI Windows não pode ser simplesmente copiado para Linux.
 
-No console do contêiner no Portainer, execute `cat /data/first-access.json` e leia o acesso inicial em ambiente privado. A senha nunca vai aos logs nem ao repositório. Entre pelo HTTPS e troque-a na tela obrigatória. O arquivo inicial é removido após a troca. Alternativamente, provisione um secret do Docker com senha de 12 a 128 caracteres e configure `CFC_ADMIN_PASSWORD_FILE`; ele é usado apenas na inicialização de um volume vazio.
-
-Cadastre unidades, pacotes, instrutores, veículos e regras, ou importe os dados antes de começar o atendimento. Crie os usuários da equipe e os acessos vinculados de aluno/instrutor. Senhas iniciais precisam ser substituídas por cada titular.
-
-## Sessões no servidor
-
-Os perfis ficam em `/data`, com checkpoints protegidos. Desligar o computador de atendimento não encerra o servidor nem apaga os perfis. Reiniciar o contêiner conserva os dados do navegador e tenta retomar acessos habilitados. O prazo da sessão continua sendo determinado pelo GOV.BR/DETRAN: expiração, CAPTCHA, MFA e autenticação pessoal podem exigir novo login. A escola confirma a identidade da conta antes de utilizar a sessão.
-
-Na primeira implantação Linux, teste um profissional e um aluno reais com o operador, incluindo persistência após fechar o cliente e após reiniciar a stack. Os testes locais sintéticos aprovados não homologam a autenticação de uma VPS específica.
-
-## Instalador
-
-O workflow Verify gera um artefato Windows; o build local também gera o EXE. Para distribuí-lo aos clientes, copie o **instalador** aprovado para `/data/downloads/CFC-Plus-Windows.exe`. Pode usar `docker cp` no host, mantendo leitura pelo UID 1654. A página `/install/` mostra automaticamente o botão quando o arquivo está presente. Não copie o EXE do servidor como se fosse instalador.
-
-Atualize a imagem por versão/digest após backup e teste. Não habilite atualização automática a cada commit em uma stack com alunos reais. Mantenha Portainer sob acesso administrativo privado e autenticação própria.
-
-Referências: [stacks e variáveis no Portainer](https://docs.portainer.io/user/docker/stacks/add), [roteamento Docker do Traefik](https://doc.traefik.io/traefik/reference/install-configuration/providers/docker/), [proxy confiável no ASP.NET](https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-10.0), [sandbox e namespaces de Chromium em Docker](https://playwright.dev/docs/docker).
-
-## WhatsApp com Evolution
-
-A conexão existente aceita `EVOLUTION_BASE_URL`, `EVOLUTION_INSTANCE` e `EVOLUTION_API_KEY` da stack. Crie uma instância exclusiva para cada autoescola no seu serviço Evolution e preencha a chave somente nas variáveis privadas do Portainer. Não inclua a chave em arquivos versionados. Abra Integrações, conecte pelo QR Code e confira envio e histórico. Sem essas variáveis, o app mostra “Não configurada”. O Compose em `infra/evolution/` serve ao desenvolvimento local; sua porta de loopback não é alcançável por outro contêiner. Para produção, use um serviço privado acessível pela rede Docker ou HTTPS, com volumes e backup próprios. O servidor Evolution e seu PostgreSQL não estão embutidos no banco SQLite de cada escola.
+Referências: [Portainer](https://docs.portainer.io/user/docker/stacks/add), [Traefik Docker](https://doc.traefik.io/traefik/reference/install-configuration/providers/docker/), [proxy ASP.NET](https://learn.microsoft.com/en-us/aspnet/core/host-and-deploy/proxy-load-balancer?view=aspnetcore-10.0).

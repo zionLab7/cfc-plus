@@ -12,6 +12,10 @@ namespace CfcPilot;
 // authenticated, per-person API and exclusive-control leases.
 public sealed class NativePortalSessions(IConfiguration config,IWebHostEnvironment env,BrowserRuntime runtime,ProfessionalSessionRegistry registry,IDataProtectionProvider protection,ILogger<NativePortalSessions> logger)
 {
+    static readonly object CapacityGate=new();static readonly HashSet<string> CentralProfiles=[];
+    string CapacityKey(string id)=>Path.GetFullPath(config["CFC_DATA_DIR"]??env.ContentRootPath)+"|"+id;
+    bool Reserve(string id){if(!TenantPlatform.Enabled(config))return false;lock(CapacityGate){var key=CapacityKey(id);if(CentralProfiles.Contains(key))return false;var limit=int.TryParse(config["CFC_CENTRAL_BROWSER_PROFILES"],out var n)?Math.Clamp(n,1,100):12;if(CentralProfiles.Count>=limit)throw new RuleException("Capacidade de navegadores do servidor atingida. Feche um perfil sem uso ou solicite ampliação ao administrador da plataforma.",503);CentralProfiles.Add(key);return true;}}
+    void ReleaseCapacity(string id){lock(CapacityGate)CentralProfiles.Remove(CapacityKey(id));}
     sealed record CookieCheckpoint(bool Verified,JsonElement[] Cookies);
     sealed class View(BrowserProfile profile,string portal,string owner)
     {
@@ -87,7 +91,7 @@ public sealed class NativePortalSessions(IConfiguration config,IWebHostEnvironme
     {
         PortalSessions.Allowed(url);if(!Guid.TryParseExact(profile.Id,"N",out _))throw new RuleException("Perfil inválido.");
         if(profile.Kind=="Aluno"&&(owner==""||profile.StudentId==""||jobId==""))throw new RuleException("Abra pela ficha do aluno com um atendente autenticado.",403);
-        await Start();await openGate.WaitAsync();try
+        var reserved=Reserve(profile.Id);try{await Start();await openGate.WaitAsync();try
         {
             var key=profile.Id+"/"+portal;var view=views.GetValueOrDefault(key);
             if(view!=null&&profile.Kind=="Aluno"&&view.Owner!=owner)throw new RuleException("A sessão do aluno está em uso por outro atendente.",409);
@@ -107,7 +111,7 @@ public sealed class NativePortalSessions(IConfiguration config,IWebHostEnvironme
             }
             using var response=await Send(new{command="open",profileId=profile.Id,portal,url,cookies});if(!response.IsSuccessStatusCode)throw new RuleException("O navegador interativo não abriu o portal.",503);
             views[key]=view;if(jobId!="")jobs[jobId]=view;if(profile.Kind!="Aluno")registry.Set(profile.Id,portal,true);
-        }finally{openGate.Release();}
+        }finally{openGate.Release();}}catch{if(reserved)ReleaseCapacity(profile.Id);throw;}
     }
     View Student(string job,string sid,string user)
     {
@@ -223,6 +227,6 @@ public sealed class NativePortalSessions(IConfiguration config,IWebHostEnvironme
     }
     public async Task<object> Close(string id,string portal,string user,string lease,bool student=false,string sid="")
     {
-        var v=student?Student(id,sid,user):Professional(id,portal);await v.Gate.WaitAsync();try{if(!student)v.Control.Check(user,lease);v.Login?.Stop();try{await Observe(v);}catch(RuleException ex) when(ex.Status==409){logger.LogDebug("Encerrando visualização indisponível: {Profile}/{Portal}",id,portal);}await Call(v,"close");views.TryRemove(v.Profile.Id+"/"+v.Portal,out _);foreach(var job in jobs.Where(x=>x.Value==v).ToArray())jobs.TryRemove(job.Key,out _);if(!student)registry.Set(id,portal,false);return new{closed=true,persistent=true};}finally{v.Gate.Release();}
+        var v=student?Student(id,sid,user):Professional(id,portal);await v.Gate.WaitAsync();try{if(!student)v.Control.Check(user,lease);v.Login?.Stop();try{await Observe(v);}catch(RuleException ex) when(ex.Status==409){logger.LogDebug("Encerrando visualização indisponível: {Profile}/{Portal}",id,portal);}await Call(v,"close");views.TryRemove(v.Profile.Id+"/"+v.Portal,out _);if(!views.Values.Any(x=>x.Profile.Id==v.Profile.Id))ReleaseCapacity(v.Profile.Id);foreach(var job in jobs.Where(x=>x.Value==v).ToArray())jobs.TryRemove(job.Key,out _);if(!student)registry.Set(id,portal,false);return new{closed=true,persistent=true};}finally{v.Gate.Release();}
     }
 }

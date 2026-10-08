@@ -170,7 +170,8 @@ public static class Operations
                 if (kind is "Recebimento" or "Crédito")
                 {
                     var rest = amount;
-                    foreach (var part in s.Installments.Where(a => a.EnrollmentId == eid && a.Status != "Cancelada" && a.Paid < a.Amount).OrderBy(a => a.Due)) { var applied = Math.Min(rest, part.Amount - part.Paid); part.Paid += applied; x.Allocations[part.Id] = applied; rest -= applied; if (rest == 0) break; }
+                    var selectedPart=Text(b,"installmentId");if(selectedPart!=""){var target=s.Installments.Find(p=>p.Id==selectedPart&&p.EnrollmentId==eid&&p.Status!="Cancelada")??throw new RuleException("Parcela fora da matrícula selecionada.",409);Require(amount<=target.Amount-target.Paid,"Valor excede o saldo da parcela selecionada.",409);}
+                    foreach (var part in s.Installments.Where(a => a.EnrollmentId == eid && a.Status != "Cancelada" && a.Paid < a.Amount&&(selectedPart==""||a.Id==selectedPart)).OrderBy(a => a.Due)) { var applied = Math.Min(rest, part.Amount - part.Paid); part.Paid += applied; x.Allocations[part.Id] = applied; rest -= applied; if (rest == 0) break; }
                 }
                 if (kind == "Débito") s.Installments.Add(new() { Id = Id(), EnrollmentId = eid, StudentId = x.StudentId, UnitId = unit, Amount = amount, Due = Text(b, "due") != "" ? Date(Text(b, "due")).ToString("yyyy-MM-dd") : Today });
                 s.Entries.Add(x); result = x; break;
@@ -187,7 +188,7 @@ public static class Operations
             case "closecash":
             {
                 var unit = Text(b, "unitId"); UnitExists(s, unit); var rows = s.Entries.Where(x => x.UnitId == unit && !x.Closed && x.Kind is "Recebimento" or "Receita" or "Despesa" or "Estorno").ToList(); Require(rows.Count > 0, "Nenhum movimento aberto nessa unidade."); foreach (var row in rows) row.Closed = true;
-                result = new { count = rows.Count, total = rows.Sum(x => x.Kind is "Despesa" or "Estorno" ? -x.Amount : x.Amount) }; break;
+                result = new { count = rows.Count, total = rows.Sum(x => x.Kind=="Estorno"&&s.Entries.Find(e=>e.Id==x.Reverses)?.Kind=="Crédito"?0:x.Kind is "Despesa" or "Estorno" ? -x.Amount : x.Amount) }; break;
             }
             case "exam":
             {

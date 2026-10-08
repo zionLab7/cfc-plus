@@ -17,6 +17,8 @@ if (args.FirstOrDefault() == "--import-infor")
     return;
 }
 
+if(args.FirstOrDefault()=="--create-import-fixture"){CommercialChecks.CreateFixture(args[1]);return;}
+if(args.FirstOrDefault()=="--self-test-finance"){await FinanceChecks.Run();return;}
 if(args.FirstOrDefault()=="--self-test-commercial"){CommercialChecks.Run();return;}
 if(args.FirstOrDefault()=="--self-test-community"){CommunityChecks.Run();return;}
 if(args.FirstOrDefault()=="--self-test-extraction"){PortalExtractionChecks.Run();return;}
@@ -33,14 +35,19 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddWindowsService(options=>options.ServiceName="CFC Plus Server");
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
-var dataDir = builder.Configuration["CFC_DATA_DIR"] ?? Path.Combine(builder.Environment.ContentRootPath, "App_Data");
-builder.Configuration.AddJsonFile(Path.Combine(dataDir, "evolution.config.json"), optional: true, reloadOnChange: true).AddJsonFile(Path.Combine(dataDir,"native-portal-settings.json"),optional:true,reloadOnChange:false).AddEnvironmentVariables();
-var protection = builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(dataDir, "keys"))).SetApplicationName("CfcPilot");
+var dataDir = builder.Configuration["CFC_DATA_DIR"] ?? Path.Combine(builder.Environment.ContentRootPath,TenantPlatform.Enabled(builder.Configuration)?"App_Data_Central":"App_Data");
+if(!TenantPlatform.Enabled(builder.Configuration))builder.Configuration.AddJsonFile(Path.Combine(dataDir, "evolution.config.json"), optional: true, reloadOnChange: true).AddJsonFile(Path.Combine(dataDir,"native-portal-settings.json"),optional:true,reloadOnChange:false).AddEnvironmentVariables();
+var central=TenantPlatform.Enabled(builder.Configuration);
+if(central)builder.Configuration["CFC_INSTALLATION_MODE"]="commercial";
+var protection = builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(dataDir, "keys"))).SetApplicationName(central?"CfcPilot-platform":"CfcPilot");
 if (OperatingSystem.IsWindows()) protection.ProtectKeysWithDpapi();
-CommercialInstallation.Prepare(builder.Configuration,builder.Environment);
+if(!central)CommercialInstallation.Prepare(builder.Configuration,builder.Environment);
+builder.Services.AddSingleton<TenantPlatform>();
+if(central)builder.Services.AddHostedService<TenantWorkers>();
 builder.Services.AddSingleton<Store>();
+builder.Services.AddSingleton<FinanceService>();
 builder.Services.AddSingleton<ImportQueue>();
-builder.Services.AddHostedService(p=>p.GetRequiredService<ImportQueue>());
+if(!central)builder.Services.AddHostedService(p=>p.GetRequiredService<ImportQueue>());
 builder.Services.AddSingleton<BrowserRuntime>();
 builder.Services.AddSingleton<NativePortalSessions>();
 builder.Services.AddSingleton<ProfessionalBrowser>();
@@ -51,7 +58,7 @@ builder.Services.AddSingleton<ImportedModules>();
 builder.Services.AddSingleton<PortalSessions>();
 builder.Services.AddSingleton<ProfessionalSessionRegistry>();
 builder.Services.AddSingleton<ProfessionalCookieVault>();
-builder.Services.AddHostedService<ProfessionalSessionRestorer>();
+if(!central)builder.Services.AddHostedService<ProfessionalSessionRestorer>();
 builder.Services.Configure<Microsoft.AspNetCore.Builder.ForwardedHeadersOptions>(options=>{
  options.ForwardedHeaders=Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor|Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto;options.ForwardLimit=1;
  foreach(var ip in (builder.Configuration["CFC_TRUSTED_PROXY"]??"").Split(';',StringSplitOptions.RemoveEmptyEntries))options.KnownProxies.Add(System.Net.IPAddress.Parse(ip.Trim()));
@@ -64,7 +71,7 @@ builder.Services.AddHttpClient<EvolutionClient>(client => client.Timeout = TimeS
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
 {
     options.Cookie.Name = "cfc.pilot"; options.Cookie.HttpOnly = true; options.Cookie.SameSite = SameSiteMode.Strict;
-    if(CommercialInstallation.Enabled(builder.Configuration))options.Cookie.SecurePolicy=CookieSecurePolicy.Always;
+    if(CommercialInstallation.Enabled(builder.Configuration)&&!(central&&builder.Environment.IsDevelopment()&&builder.Configuration["CFC_ALLOW_LOCAL_HTTP"]=="true"))options.Cookie.SecurePolicy=CookieSecurePolicy.Always;
     options.ExpireTimeSpan = TimeSpan.FromHours(8); options.SlidingExpiration = true;
     options.Events.OnRedirectToLogin = ctx => { ctx.Response.StatusCode = 401; return Task.CompletedTask; };
     options.Events.OnRedirectToAccessDenied = ctx => { ctx.Response.StatusCode = 403; return Task.CompletedTask; };
@@ -72,10 +79,13 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddAuthorization();
 builder.Services.AddRateLimiter(options => options.AddPolicy("login", ctx => RateLimitPartition.GetFixedWindowLimiter(ctx.Connection.RemoteIpAddress?.ToString() ?? "local", _ => new() { PermitLimit = 10, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 })));
 var app = builder.Build();
+var localCentral=central&&app.Environment.IsDevelopment()&&builder.Configuration["CFC_ALLOW_LOCAL_HTTP"]=="true";
+if(central)app.Services.GetRequiredService<TenantPlatform>().Prepare();
+if(args.FirstOrDefault()=="--adopt-school"){if(!central)throw new InvalidOperationException("Adoção exige modo central.");string Arg(string name){var i=Array.IndexOf(args,name);return i>=0&&i+1<args.Length?args[i+1]:throw new ArgumentException("Informe "+name);}Console.WriteLine(JsonSerializer.Serialize(await app.Services.GetRequiredService<TenantPlatform>().Register(args[1],Arg("--school-name"),Arg("--legacy-data"))));await app.DisposeAsync();return;}
 app.UseForwardedHeaders();
 app.Use(async(ctx,next)=>{
- if(CommercialInstallation.Enabled(builder.Configuration)&&!ctx.Request.IsHttps&&ctx.Request.Path.StartsWithSegments("/api")&&ctx.Request.Path!="/api/health"){ctx.Response.Headers.CacheControl="no-store";ctx.Response.StatusCode=400;await ctx.Response.WriteAsJsonAsync(new{error="Use o endereço HTTPS da autoescola. Confira o proxy confiável do servidor."});return;}
- if(ctx.Request.Method!="GET"&&ctx.Request.Path.StartsWithSegments("/api")&&ctx.Request.Path!="/api/auth/logout"&&app.Services.GetRequiredService<ImportQueue>().Maintenance){ctx.Response.StatusCode=503;await ctx.Response.WriteAsJsonAsync(new{error="Base ativada. Serviço em reinício para concluir a importação."});return;}
+ if(CommercialInstallation.Enabled(builder.Configuration)&&!(localCentral&&System.Net.IPAddress.IsLoopback(ctx.Connection.RemoteIpAddress??System.Net.IPAddress.None))&&!ctx.Request.IsHttps&&ctx.Request.Path.StartsWithSegments("/api")&&ctx.Request.Path!="/api/health"){ctx.Response.Headers.CacheControl="no-store";ctx.Response.StatusCode=400;await ctx.Response.WriteAsJsonAsync(new{error="Use o endereço HTTPS da autoescola. Confira o proxy confiável do servidor."});return;}
+ if(!central&&ctx.Request.Method!="GET"&&ctx.Request.Path.StartsWithSegments("/api")&&ctx.Request.Path!="/api/auth/logout"&&app.Services.GetRequiredService<ImportQueue>().Maintenance){ctx.Response.StatusCode=503;await ctx.Response.WriteAsJsonAsync(new{error="Base ativada. Serviço em reinício para concluir a importação."});return;}
  await next();
 });
 app.Use(async (context, next) =>
@@ -102,7 +112,8 @@ var shellStaticFiles=new StaticFileOptions{OnPrepareResponse=ctx=>
     if(ctx.File.Name is "index.html" or "sw.js"||ctx.File.Name.EndsWith(".js",StringComparison.OrdinalIgnoreCase))ctx.Context.Response.Headers.CacheControl="no-cache";
 }};
 app.UseDefaultFiles(); app.UseStaticFiles(shellStaticFiles); app.UseAuthentication(); app.UseAuthorization(); app.UseRateLimiter();
-app.MapGet("/api/health", (Store store) => new { status = "ok", application="cfc-plus", version = "0.3.0", demo = !store.IsReal });
+if(central){app.UseTenantSelection();app.MapPlatform();}
+app.MapGet("/api/health", () => new { status = "ok", application="cfc-plus", version = "0.4.0", central, demo=!central&&!CommercialInstallation.Enabled(builder.Configuration)&&!app.Services.GetRequiredService<Store>().IsReal });
 app.MapGet("/api/auth/units",(Store store)=>Results.Ok(store.LoginUnits()));
 app.MapPost("/api/auth/login", async (HttpContext ctx, Store store, JsonElement body) =>
 {
@@ -113,8 +124,8 @@ app.MapPost("/api/auth/login", async (HttpContext ctx, Store store, JsonElement 
     if(candidates.Length==0)throw new RuleException("Login ou senha incorretos.",401);
     if(candidates.Length>1)throw new RuleException("Há acessos com este login em mais de uma unidade. Selecione a unidade ou peça ao administrador para diferenciar os logins duplicados.",409);
     var user=candidates[0];
-    await ctx.SignInAsync(new ClaimsPrincipal(new ClaimsIdentity([new(ClaimTypes.NameIdentifier, user.Id), new(ClaimTypes.Name, user.Name), new(ClaimTypes.Role, user.Role),new("cfc-stamp",Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(user.PasswordHash))))], CookieAuthenticationDefaults.AuthenticationScheme)));
-    return Results.Ok(new { user.Id, user.Name, user.Role, mustChangePassword=CommercialInstallation.Enabled(builder.Configuration)&&user.MustChangePassword });
+    await ctx.SignInAsync(new ClaimsPrincipal(new ClaimsIdentity([new(ClaimTypes.NameIdentifier, user.Id), new(ClaimTypes.Name, user.Name), new(ClaimTypes.Role, user.Role),new("cfc-stamp",Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(user.PasswordHash)))),new("cfc-school",ctx.Items["cfc-school"]?.ToString()??"")], CookieAuthenticationDefaults.AuthenticationScheme)));
+    return Results.Ok(new { user.Id, user.Name, user.Role, schoolId=ctx.Items["cfc-school"]?.ToString()??"", schoolName=ctx.Items["cfc-school-name"]?.ToString()??"", mustChangePassword=CommercialInstallation.Enabled(builder.Configuration)&&user.MustChangePassword });
 }).RequireRateLimiting("login");
 app.MapPost("/api/auth/logout", async (HttpContext ctx) => { await ctx.SignOutAsync(); return Results.Ok(); });
 async Task<User> Current(HttpContext ctx, Store store)
@@ -123,23 +134,23 @@ async Task<User> Current(HttpContext ctx, Store store)
     var stamp=ctx.User.FindFirstValue("cfc-stamp");if((stamp!=null||CommercialInstallation.Enabled(builder.Configuration))&&stamp!=Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(user.PasswordHash))))throw new RuleException("Seu acesso mudou. Entre novamente.",401);
     if(CommercialInstallation.Enabled(builder.Configuration)&&user.MustChangePassword&&ctx.Request.Path!="/api/auth/password"&&ctx.Request.Path!="/api/auth/me")throw new RuleException("Troque a senha inicial antes de utilizar o sistema.",428);return user;
 }
-app.MapGet("/api/auth/me",async(HttpContext ctx,Store store)=>{var u=await Current(ctx,store);return Results.Ok(new{u.Id,u.Name,u.Role,mustChangePassword=CommercialInstallation.Enabled(builder.Configuration)&&u.MustChangePassword});}).RequireAuthorization();
+app.MapGet("/api/auth/me",async(HttpContext ctx,Store store)=>{var u=await Current(ctx,store);return Results.Ok(new{u.Id,u.Name,u.Role,schoolId=ctx.Items["cfc-school"]?.ToString()??"",schoolName=ctx.Items["cfc-school-name"]?.ToString()??"",mustChangePassword=CommercialInstallation.Enabled(builder.Configuration)&&u.MustChangePassword});}).RequireAuthorization();
 app.MapPost("/api/auth/password",async(HttpContext ctx,Store store,JsonElement body)=>{
  var u=await Current(ctx,store);var old=body.GetProperty("currentPassword").GetString()??"";var password=body.GetProperty("newPassword").GetString()??"";
  if(old.Length>128||password.Length is <12 or >128||password==old||!Passwords.Verify(old,u.PasswordHash))throw new RuleException("Informe a senha atual e uma nova senha diferente, de 12 a 128 caracteres.");
  var op=ctx.Request.Headers["X-Operation-Id"].ToString();if(!Guid.TryParse(op,out _))throw new RuleException("Operação sem identificador.");
  await store.Mutate(u.Id,op,Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(body.GetRawText()))),s=>{var a=s.Users.Find(x=>x.Id==u.Id&&x.Active)??throw new RuleException("Usuário inativo.",401);if(a.PasswordHash!=u.PasswordHash)throw new RuleException("A senha mudou. Entre novamente.",409);a.PasswordHash=Passwords.Hash(password);a.MustChangePassword=false;s.Audit.Add(new(){Id=Operations.Id(),User=u.Name,Action="Troca de senha própria",Date=Operations.Now.ToString("s")});return new{ok=true};},new StateScope{Action="password-self",Body=body});
- if(u.Id=="admin"){var initial=Path.Combine(dataDir,"first-access.json");if(File.Exists(initial))File.Delete(initial);}
+ if(u.Id=="admin"){var initial=Path.Combine(store.DataRoot,"first-access.json");if(File.Exists(initial))File.Delete(initial);}
  await ctx.SignOutAsync();return Results.Ok(new{loginRequired=true});
 }).RequireAuthorization().RequireRateLimiting("login");
-app.MapGet("/api/distribution",()=>Results.Ok(CommercialInstallation.Public(builder.Configuration)));
+app.MapGet("/api/distribution",(HttpContext ctx)=>Results.Ok(central?new{central=true,commercial=true,schoolName="CFC+",version="0.4.0",portal="/portal/",install="/install/",desktop=File.Exists(Path.Combine(dataDir,"downloads","CFC-Plus-Windows.exe"))?"/api/distribution/windows":"",support=builder.Configuration["CFC_SUPPORT_EMAIL"]??""}:CommercialInstallation.Public(builder.Configuration)));
 app.MapGet("/api/distribution/windows",()=>{var file=Path.Combine(dataDir,"downloads","CFC-Plus-Windows.exe");return File.Exists(file)?Results.File(file,"application/vnd.microsoft.portable-executable","CFC-Plus-Windows.exe",enableRangeProcessing:true):Results.NotFound(new{error="O instalador será disponibilizado pelo responsável da plataforma."});});
 app.MapGet("/api/system/imports",async(HttpContext ctx,Store store,ImportQueue queue)=>Results.Ok(queue.List(await Current(ctx,store)))).RequireAuthorization();
 app.MapPost("/api/system/imports",async(HttpContext ctx,Store store,ImportQueue queue,JsonElement body)=>Results.Ok(await queue.Create(await Current(ctx,store),body.GetProperty("name").GetString()??"",body.GetProperty("bytes").GetInt64()))).RequireAuthorization();
 app.MapPost("/api/system/imports/{id}/chunk",async(string id,long offset,HttpContext ctx,Store store,ImportQueue queue)=>Results.Ok(await queue.Append(await Current(ctx,store),id,offset,ctx.Request.Body,ctx.Request.ContentLength))).RequireAuthorization();
 app.MapPost("/api/system/imports/{id}/verify",async(string id,HttpContext ctx,Store store,ImportQueue queue)=>Results.Ok(await queue.Enqueue(await Current(ctx,store),id))).RequireAuthorization();
 app.MapPost("/api/system/imports/{id}/discard",async(string id,HttpContext ctx,Store store,ImportQueue queue)=>Results.Ok(await queue.Discard(await Current(ctx,store),id))).RequireAuthorization();
-app.MapPost("/api/system/imports/{id}/activate",async(string id,HttpContext ctx,Store store,ImportQueue queue,JsonElement body)=>{var result=await queue.Activate(await Current(ctx,store),id,body.TryGetProperty("confirmed",out var c)&&c.ValueKind==JsonValueKind.True);ctx.Response.OnCompleted(async()=>{await Task.Delay(2000);app.Lifetime.StopApplication();});return Results.Ok(result);}).RequireAuthorization();
+app.MapPost("/api/system/imports/{id}/activate",async(string id,HttpContext ctx,Store store,ImportQueue queue,JsonElement body)=>{var result=await queue.Activate(await Current(ctx,store),id,body.TryGetProperty("confirmed",out var c)&&c.ValueKind==JsonValueKind.True);ctx.Response.OnCompleted(async()=>{await Task.Delay(2000);if(central)await app.Services.GetRequiredService<TenantPlatform>().Reload(ctx.User.FindFirstValue("cfc-school")!);else app.Lifetime.StopApplication();});return Results.Ok(result);}).RequireAuthorization();
 app.MapGet("/api/students/{sid}/gov-credential",async(string sid,HttpContext ctx,Store store,StudentResources resources)=>Results.Ok(await resources.CredentialStatus(await Current(ctx,store),sid))).RequireAuthorization();
 app.MapPost("/api/students/{sid}/gov-credential",async(string sid,HttpContext ctx,Store store,StudentResources resources,JsonElement body)=>Results.Ok(await resources.SaveCredential(await Current(ctx,store),sid,body.GetProperty("password").GetString()??""))).RequireAuthorization();
 app.MapPost("/api/students/{sid}/gov-credential/reveal",async(string sid,HttpContext ctx,Store store,StudentResources resources)=>Results.Ok(new{password=await resources.Password(await Current(ctx,store),sid,true)})).RequireAuthorization();
@@ -322,7 +333,9 @@ app.MapPost("/api/integrations/evolution/send", async (HttpContext ctx, Store st
         throw;
     }
 }).RequireAuthorization();
-app.MapGet("/api/finance/ledger",async(HttpContext ctx,Store store)=>{var u=await Current(ctx,store);if(u.Role is "Aluno" or "Instrutor")throw new RuleException("Acesso restrito à equipe.",403);var q=ctx.Request.Query;if(!DateOnly.TryParseExact(q["from"],"yyyy-MM-dd",out var from)||!DateOnly.TryParseExact(q["to"],"yyyy-MM-dd",out var to)||to.DayNumber-from.DayNumber is <0 or >366)throw new RuleException("Selecione um período de até um ano.");return Results.Ok(store.Ledger(q["unit"].ToString(),from.ToString("yyyy-MM-dd"),to.AddDays(1).ToString("yyyy-MM-dd"),int.TryParse(q["page"],out var n)?Math.Clamp(n,1,100000):1));}).RequireAuthorization();
+app.MapGet("/api/finance/students/{sid}",async(string sid,int? page,HttpContext ctx,Store store,FinanceService finance,StudentResources resources,CommunityPortal community)=>{var u=await Current(ctx,store);if(u.Role=="Aluno"&&!community.Policy().StudentFinance)throw new RuleException("Consulta financeira desabilitada pela escola.",403);if(u.Role=="Instrutor")throw new RuleException("Acesso restrito.",403);var target=await resources.Authorize(u,sid,true);if(u.Role!="Aluno"&&u.UnitId!=""&&u.UnitId!=target.UnitId)throw new RuleException("Unidade fora do seu acesso.",403);return Results.Ok(await finance.Student(sid,page??1));}).RequireAuthorization();
+app.MapGet("/api/finance/summary",async(HttpContext ctx,Store store,FinanceService finance)=>{var u=await Current(ctx,store);if(u.Role is "Aluno" or "Instrutor")throw new RuleException("Acesso restrito à equipe.",403);var q=ctx.Request.Query;var unit=q["unit"].ToString();if(u.UnitId!=""){if(unit!=""&&unit!=u.UnitId)throw new RuleException("Unidade fora do seu acesso.",403);unit=u.UnitId;}if(!DateOnly.TryParseExact(q["from"],"yyyy-MM-dd",out var from)||!DateOnly.TryParseExact(q["to"],"yyyy-MM-dd",out var to)||to.DayNumber-from.DayNumber is <0 or >366)throw new RuleException("Selecione um período de até um ano.");return Results.Ok(await finance.General(unit,from.ToString("yyyy-MM-dd"),to.AddDays(1).ToString("yyyy-MM-dd"),int.TryParse(q["page"],out var n)?Math.Clamp(n,1,100000):1));}).RequireAuthorization();
+app.MapGet("/api/finance/ledger",async(HttpContext ctx,Store store)=>{var u=await Current(ctx,store);if(u.Role is "Aluno" or "Instrutor")throw new RuleException("Acesso restrito à equipe.",403);var q=ctx.Request.Query;if(!DateOnly.TryParseExact(q["from"],"yyyy-MM-dd",out var from)||!DateOnly.TryParseExact(q["to"],"yyyy-MM-dd",out var to)||to.DayNumber-from.DayNumber is <0 or >366)throw new RuleException("Selecione um período de até um ano.");var unit=q["unit"].ToString();if(u.UnitId!=""){if(unit!=""&&unit!=u.UnitId)throw new RuleException("Unidade fora do seu acesso.",403);unit=u.UnitId;}return Results.Ok(store.Ledger(unit,from.ToString("yyyy-MM-dd"),to.AddDays(1).ToString("yyyy-MM-dd"),int.TryParse(q["page"],out var n)?Math.Clamp(n,1,100000):1));}).RequireAuthorization();
 app.MapGet("/api/legacy/catalog", async (HttpContext ctx, Store store, LegacyArchive archive) => { var u=await Current(ctx,store); if(u.Role is "Aluno" or "Instrutor")throw new RuleException("Acesso restrito à equipe.",403); return Results.Ok(archive.Catalog()); }).RequireAuthorization();
 app.MapGet("/api/legacy/tables/{table}", async (string table, HttpContext ctx, Store store, LegacyArchive archive) => { var u=await Current(ctx,store);if(u.Role is "Aluno" or "Instrutor")throw new RuleException("Acesso restrito à equipe.",403);var q=ctx.Request.Query;return Results.Ok(archive.Table(table,int.TryParse(q["page"],out var n)?Math.Clamp(n,1,100000):1,q["q"].ToString(),q["studentId"].ToString(),q["unit"].ToString())); }).RequireAuthorization();
 app.MapGet("/api/legacy/issues",async (HttpContext ctx,Store store,LegacyArchive archive)=>{var u=await Current(ctx,store);if(u.Role is not ("Administrador" or "Gerente"))throw new RuleException("Acesso restrito à gestão.",403);return Results.Ok(archive.Issues(int.TryParse(ctx.Request.Query["page"],out var n)?Math.Clamp(n,1,100000):1));}).RequireAuthorization();
@@ -362,6 +375,6 @@ app.MapGet("/api/community/documents/{id}",async(string id,HttpContext ctx,Store
 
 app.MapGet("/portal",(HttpContext ctx)=>Results.Redirect("/portal/index.html"+ctx.Request.QueryString));
 // Give each public entry point its own shell when endpoint routing selects a fallback.
-foreach(var entry in new[]{"install","account","portal"})app.MapFallbackToFile("/"+entry+"/{*path:nonfile}",entry+"/index.html",shellStaticFiles);
+foreach(var entry in new[]{"install","account","portal","platform"})app.MapFallbackToFile("/"+entry+"/{*path:nonfile}",entry+"/index.html",shellStaticFiles);
 app.MapFallbackToFile("index.html",shellStaticFiles);
 app.Run();
