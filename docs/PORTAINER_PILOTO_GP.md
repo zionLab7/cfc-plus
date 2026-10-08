@@ -51,8 +51,8 @@ Crie o registro DNS A do domínio escolhido para o IPv4 da VPS. Use somente host
 O Compose usa uma imagem pronta; importar o repositório NÃO compila o app na VPS. Isso evita uma compilação pesada junto da aplicação que já roda no KVM 2.
 
 1. Abra [Actions](https://github.com/zionLab7/cfc-plus/actions) e espere **Verify** do commit escolhido ficar verde.
-2. Abra **Publish versioned images** → **Run workflow**, escolha main e execute.
-3. Espere os jobs publish e windows-release concluírem. Este fluxo publica as imagens de versão e o instalador Windows com SHA-256.
+2. Uma versão ainda não distribuída é publicada automaticamente após o Verify aprovado de main. **Publish versioned images** também pode ser iniciado manualmente por **Run workflow** se for necessário retomar uma publicação.
+3. Espere os jobs release-check, publish e windows-release concluírem. Este fluxo publica as imagens de versão e o instalador Windows com SHA-256. Versões já distribuídas não são sobrescritas; use uma nova versão para alterações futuras.
 4. No GitHub → Packages, confira se o pacote `cfc-plus` é público. Repositório público e pacote GHCR público são configurações distintas. Para manter pacote privado, cadastre o registry ghcr.io e uma credencial de leitura no Portainer.
 5. A imagem desta entrega é `ghcr.io/zionlab7/cfc-plus:0.4.1-browser`. Confirme seu pull na VPS:
 

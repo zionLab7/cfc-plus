@@ -3,6 +3,10 @@ on:
   push:
     tags: ['v*']
   workflow_dispatch:
+  workflow_run:
+    workflows: ['Verify']
+    types: [completed]
+    branches: [main]
 concurrency:
   group: cfc-versioned-publish
   cancel-in-progress: false
@@ -10,10 +14,52 @@ permissions:
   contents: read
   packages: write
 jobs:
+  release-check:
+    # Only trusted main pushes may promote a successful Verify run.
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.head_repository.full_name == github.repository &&
+       (github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch') &&
+       github.event.workflow_run.head_sha == github.sha)
+    runs-on: ubuntu-latest
+    outputs:
+      publish: ${{ steps.check.outputs.publish }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/github-script@v7
+        id: check
+        with:
+          script: |
+            const fs = require('fs');
+            const version = fs.readFileSync('CfcPilot.csproj','utf8').match(/<Version>([^<]+)<\/Version>/)?.[1];
+            if (!version || !/^\d+\.\d+\.\d+$/.test(version)) throw new Error('Invalid release version');
+            const tag = 'v' + version;
+            if (context.eventName === 'push' && context.ref.startsWith('refs/tags/') && context.ref !== 'refs/tags/' + tag)
+              throw new Error('Tag and project version differ');
+            try {
+              const release = await github.rest.repos.getReleaseByTag({...context.repo, tag});
+              const installer = 'CFC-Plus-Instalador-' + version + '-x64.exe';
+              const names = release.data.assets.map(a => a.name);
+              if (!names.includes(installer) || !names.includes(installer + '.sha256'))
+                throw new Error('Release exists without complete assets; repair explicitly rather than overwrite a distributed version');
+              core.notice('Version already distributed; images and installer will not be overwritten.');
+              core.setOutput('publish','false');
+            } catch (error) {
+              if (error.status !== 404) throw error;
+              core.setOutput('publish','true');
+            }
   publish:
+    needs: release-check
+    if: needs.release-check.outputs.publish == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
@@ -61,6 +107,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 10.0.x
@@ -97,13 +145,15 @@ jobs:
           [xml]$taskProject = Get-Content CfcPilot.csproj
           $taskVersion = $taskProject.Project.PropertyGroup.Version
           $taskTag = "v$taskVersion"
+          $taskSource = git rev-parse HEAD
+          if ($LASTEXITCODE -ne 0) { throw "Could not identify checked-out source" }
           $taskInstaller = Get-Item "artifacts/desktop/CFC-Plus-Instalador-$taskVersion-x64.exe"
           $taskChecksum = "$($taskInstaller.FullName).sha256"
           $taskHash = (Get-FileHash $taskInstaller.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
           "$taskHash  $($taskInstaller.Name)" | Set-Content $taskChecksum -Encoding ascii
           gh release view $taskTag --repo $env:GITHUB_REPOSITORY --json tagName
           if ($LASTEXITCODE -ne 0) {
-            gh release create $taskTag --repo $env:GITHUB_REPOSITORY --target $env:GITHUB_SHA --title "CFC+ $taskVersion - piloto GP" --notes "Cliente Windows x64 e imagem de servidor do piloto. Consulte docs/PORTAINER_PILOTO_GP.md antes de instalar. Perfis locais persistentes e seleção de certificado disponíveis; captura biométrica e homologação de equipamentos ainda exigem validação. Instalador ainda sem assinatura comercial."
+            gh release create $taskTag --repo $env:GITHUB_REPOSITORY --target $taskSource --title "CFC+ $taskVersion - piloto GP" --notes "Cliente Windows x64 e imagem de servidor do piloto. Consulte docs/PORTAINER_PILOTO_GP.md antes de instalar. Perfis locais persistentes e seleção de certificado disponíveis; captura biométrica e homologação de equipamentos ainda exigem validação. Instalador ainda sem assinatura comercial."
             if ($LASTEXITCODE -ne 0) { throw "Could not create release" }
           }
           # Refuse overwriting a version already distributed.
