@@ -1,5 +1,7 @@
 # Instalar o CFC+ na VPS da GP pelo Portainer — piloto de um mês
 
+Use o Compose de main atualizado para Portainer. A imagem e o instalador continuam na versão 0.4.1; a tag v0.4.1 guarda o Compose anterior, cujo seccomp inline é incompatível com o CLI embutido no Portainer 2.45.
+
 Este roteiro mantém o app central e o navegador de servidor em UMA stack, junto com Evolution, PostgreSQL da Evolution e Redis. Reutiliza o Docker, Portainer e Traefik existentes. Não cria outro Traefik, não publica portas extras e não altera a outra aplicação da VPS.
 
 Ambiente informado: Hostinger KVM 2, Linux x86_64, 2 vCPUs, 8 GB RAM, 100 GB disco; rede Docker `cfcplus`. Domínio, certresolver e IP do Traefik ainda precisam ser preenchidos. O plano vence em 11/10/2026: confira a renovação para cobrir o mês inteiro.
@@ -69,6 +71,7 @@ Use `infra/production/pilot.env.example` como modelo. Guarde a versão preenchid
 
 ~~~dotenv
 CFC_BROWSER_IMAGE=ghcr.io/zionlab7/cfc-plus:0.4.1-browser
+CHROMIUM_SECCOMP_PATH=/data/cfcplus-chromium-seccomp.json
 CFC_DOMAIN=PREENCHER_DOMINIO_SEM_HTTPS
 TRAEFIK_NETWORK=cfcplus
 TRAEFIK_IP=PREENCHER_IP_DO_TRAEFIK_NA_REDE_CFCPLUS
@@ -97,6 +100,7 @@ REDIS_CPUS=0.1
 | Variável | O que informar |
 |---|---|
 | CFC_BROWSER_IMAGE | Imagem publicada e aprovada, ou seu digest. |
+| CHROMIUM_SECCOMP_PATH | Caminho do perfil no container Portainer, preparado no passo 5. É diferente do caminho no host Docker. |
 | CFC_DOMAIN | Hostname que você configurou no DNS. |
 | TRAEFIK_NETWORK | cfcplus; a rede deve existir e conter o Traefik. |
 | TRAEFIK_IP | IP real do Traefik NESSA rede. |
@@ -124,19 +128,27 @@ Os limites somam aproximadamente **4,25 GiB de RAM e 1,8 vCPU**. Os 1 GiB de /de
 
 ## 5. Criar UMA stack pelo repositório
 
+Primeiro disponibilize o perfil de segurança dentro do volume persistente do Portainer. Faça uma cópia local do repositório atualizado e, no host que tem o Docker e o container Portainer, execute (ajuste o nome do container se necessário):
+
+~~~sh
+docker cp ./infra/production/chromium-seccomp.json portainer:/data/cfcplus-chromium-seccomp.json
+~~~
+
+O arquivo é lido pelo CLI que roda DENTRO do Portainer. Copiá-lo somente para uma pasta da VPS não basta. O perfil faz parte do repositório, mas o Compose recebe seu caminho absoluto pelo campo CHROMIUM_SECCOMP_PATH para funcionar em versões que não aceitam seccomp inline. Preserve também esse arquivo ao restaurar o volume do Portainer.
+
 Portainer → Stacks → Add stack:
 - Name: `cfc-gp-piloto`.
 - Método: Git Repository.
 - Repository URL: `https://github.com/zionLab7/cfc-plus.git`.
 - Authentication: desativada, pois o repositório é público.
-- Repository reference: `refs/heads/main`, ou a tag de release validada.
+- Repository reference: `refs/heads/main` com a correção deste guia; a tag v0.4.1 usa o Compose antigo.
 - Compose path: `infra/production/compose.pilot.yaml`.
 - Additional paths: nenhum.
 - Environment variables: adicione as variáveis acima; pode carregar um .env PRIVADO preenchido.
 - GitOps/atualização automática: desativada durante o mês de teste.
 - Deploy the stack.
 
-O filtro seccomp Chromium aprovado está incorporado no Compose; não precisa copiar um arquivo para o host nem montar arquivos dentro do Portainer. Não substitua por privileged ou seccomp=unconfined.
+O filtro seccomp Chromium aprovado é carregado do arquivo indicado em CHROMIUM_SECCOMP_PATH. Não substitua por privileged ou seccomp=unconfined. Erros de arquivo inexistente exigem conferir esse caminho no container Portainer.
 
 A stack terá app, evolution, postgres e redis. Traefik e Portainer permanecem nas instalações existentes. O PostgreSQL é somente da Evolution; as escolas usam os bancos SQLite próprios do CFC+. Nenhuma porta 5050, 8080, 5432 ou 6379 é publicada.
 
