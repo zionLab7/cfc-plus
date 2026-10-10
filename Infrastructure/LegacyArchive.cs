@@ -20,13 +20,13 @@ public sealed class LegacyArchive(Store store)
         string Parameter(object? value){values.Add(value);return "$"+(values.Count-1);}
         if(sid!="")
         {
-            var source=Database.Scalar(db,"SELECT json_extract(json,'$.sourceId') FROM entities WHERE kind='Students' AND id=$0",sid);
-            if(source=="")throw new RuleException("Aluno do legado não encontrado.",404);
+            var sources=StudentDedup.Sources(db,sid);var sourceSet=" IN("+string.Join(',',sources.Select(s=>Parameter(s)))+")";
+
             var column=columns.FirstOrDefault(c=>new[]{"Aluno","AlunoId","PacoteLog_aluno"}.Contains(c,StringComparer.OrdinalIgnoreCase));
-            if(column!=null)filters.Add(Database.Quote(column)+"="+Parameter(source));
-            else if(table.Equals("Agendaaula",StringComparison.OrdinalIgnoreCase))filters.Add("AgendaAula_id IN(SELECT AgendaAula_id FROM raw_Agendaitens WHERE Aluno="+Parameter(source)+")");
-            else if(table.Equals("Historico_pedido",StringComparison.OrdinalIgnoreCase))filters.Add("EXISTS(SELECT 1 FROM raw_Pedido p WHERE p.Pedido_id=raw_Historico_pedido.PEDIDO_ID AND p.Unidade=raw_Historico_pedido.UNIDADE AND p.Aluno="+Parameter(source)+") AND (SELECT count(distinct p.Aluno) FROM raw_Pedido p WHERE p.Pedido_id=raw_Historico_pedido.PEDIDO_ID AND p.Unidade=raw_Historico_pedido.UNIDADE)=1");
-            else if(table.Equals("CarnePagamento",StringComparison.OrdinalIgnoreCase))filters.Add("CarneID IN(SELECT ID FROM raw_Carne WHERE Aluno="+Parameter(source)+")");
+            if(column!=null)filters.Add(Database.Quote(column)+sourceSet);
+            else if(table.Equals("Agendaaula",StringComparison.OrdinalIgnoreCase))filters.Add("AgendaAula_id IN(SELECT AgendaAula_id FROM raw_Agendaitens WHERE Aluno"+sourceSet+")");
+            else if(table.Equals("Historico_pedido",StringComparison.OrdinalIgnoreCase))filters.Add("EXISTS(SELECT 1 FROM raw_Pedido p WHERE p.Pedido_id=raw_Historico_pedido.PEDIDO_ID AND p.Unidade=raw_Historico_pedido.UNIDADE AND p.Aluno"+sourceSet+") AND (SELECT count(distinct p.Aluno) FROM raw_Pedido p WHERE p.Pedido_id=raw_Historico_pedido.PEDIDO_ID AND p.Unidade=raw_Historico_pedido.UNIDADE)=1");
+            else if(table.Equals("CarnePagamento",StringComparison.OrdinalIgnoreCase))filters.Add("CarneID IN(SELECT ID FROM raw_Carne WHERE Aluno"+sourceSet+")");
             else filters.Add("0=1");
         }
         if(unit!=""){var col=columns.FirstOrDefault(c=>new[]{"Unidade","UnidadeId"}.Contains(c,StringComparer.OrdinalIgnoreCase));if(col!=null)filters.Add(Database.Quote(col)+"="+Parameter(unit));}

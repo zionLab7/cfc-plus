@@ -18,11 +18,11 @@ public static class ProjectionUpgrade
             if(Database.Scalar(copy,"PRAGMA integrity_check")!="ok"||Database.Count(copy,"SELECT count(*) FROM entities WHERE kind='Enrollments' AND json_extract(json,'$.imported')=1")!=Database.Count(copy,"SELECT count(*) FROM raw_Pedido"))throw new InvalidOperationException("Contagem de matrículas não confere; base original permanece ativa.");
             if(Database.Count(copy,"SELECT SUM(imported) FROM import_tables")!=sourceRows||Database.Count(copy,"SELECT count(*) FROM import_tables")!=sourceTables)throw new InvalidOperationException("Catálogo original não confere.");
             var changes=Database.Count(copy,"SELECT count(*) FROM entities WHERE kind='Entries' AND enrollment_id LIKE 'infor:PedidoNum:%'");
-            File.WriteAllText(Path.Combine(directory,"validation.json"),JsonSerializer.Serialize(new{sourceTables,sourceRows,enrollments=12350,linkedEntries=changes,integrity="ok",originalRetained=true,source,verified=DateTime.UtcNow},Store.Json));
+            File.WriteAllText(Path.Combine(directory,"validation.json"),JsonSerializer.Serialize(new{sourceTables,sourceRows,enrollments=Database.Count(copy,"SELECT count(*) FROM entities WHERE kind='Enrollments'"),linkedEntries=changes,integrity="ok",originalRetained=true,source,verified=DateTime.UtcNow},Store.Json));
             Database.Execute(copy,"PRAGMA wal_checkpoint(TRUNCATE);");
         }
         File.Copy(active,Path.Combine(directory,"previous-active-database.json"));
         var next=active+".tmp";File.WriteAllText(next,JsonSerializer.Serialize(new{path=Path.GetRelativePath(root,target),importId=manifest.GetProperty("importId").GetString()}));File.Move(next,active,true);
-        Console.WriteLine("Cópia conferida e ativada: 12.350 matrículas únicas; "+sourceRows+" registros originais preservados em "+sourceTables+" tabelas. Banco anterior e manifesto mantidos para reversão.");
+        Console.WriteLine("Cópia de matrículas conferida e ativada: "+sourceRows+" registros originais preservados em "+sourceTables+" tabelas. Banco anterior e manifesto mantidos para reversão.");
     }
 }

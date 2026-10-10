@@ -40,7 +40,7 @@ public class Student
     public string MedicalUntil { get; set; } = ""; public bool Ear { get; set; } public bool Ladv { get; set; }
     public string Notes { get; set; } = ""; public bool Blocked { get; set; }
     public string SourceId { get; set; } = ""; public bool Imported { get; set; } public string SourceTable { get; set; } = "";
-    public List<string> Phones { get; set; } = []; public string Process { get; set; } = ""; public string Category { get; set; } = "";
+    public List<string> LegacyUnitIds { get; set; } = []; public List<string> LegacySourceIds { get; set; } = []; public List<string> Phones { get; set; } = []; public string Process { get; set; } = ""; public string Category { get; set; } = "";
     public string SearchName => RelationalStore.SearchText(Name);
 }
 public class Package : LegacyEntity { public bool NeedsConfiguration { get; set; } public bool Active { get; set; } = true; public string Id { get; set; } = ""; public string Name { get; set; } = ""; public string Category { get; set; } = "B"; public string Service { get; set; } = "Primeira habilitação"; public int Lessons { get; set; } = 20; public decimal Price { get; set; } public int Parts { get; set; } = 4; }

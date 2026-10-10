@@ -13,3 +13,6 @@ Os arquivos de staging, relatório e logs privados ficam em tenants/<id>/import-
 O formato Infor existente é o caminho implementado; não há importação universal de qualquer planilha sem mapeamento. Para outro fornecedor/formato, precisamos desenvolver e validar o adaptador com sua estrutura, sem misturar unidades de escolas distintas. O mesmo CPF pode existir em diferentes escolas; dentro de uma escola, filiais compartilham o cadastro e seus vínculos.
 
 Migração Windows → Linux exige importar os dados e revalidar credenciais/perfis no servidor de destino. Arquivos DPAPI não são portáveis por simples cópia. Nunca envie base, exports, anexos ou chaves para o repositório GitHub.
+
+
+A partir de 0.4.2, a projeção usa a chave única Pedido_num para preservar matrículas distintas e seus vínculos por aluno. Cadastros de aluno são consolidados somente com CPF de dígitos verificadores válidos, mesmo nome normalizado e mesma data de nascimento completa. O cadastro mais recente pelo identificador original é o principal; os demais perfis, IDs e todos os registros brutos são preservados. Cursos, etapas e consultas do legado abrangem todos esses IDs. Valores, IDs financeiros e unidades não são deduplicados por aparência. Identidades divergentes ficam separadas e sinalizadas no relatório.

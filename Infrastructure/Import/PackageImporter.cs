@@ -31,7 +31,7 @@ public static partial class PackageImporter
         var importId = DateTime.UtcNow.ToString("yyyyMMddTHHmmss") + "-" + Guid.NewGuid().ToString("N")[..8];
         var staging = Path.Combine(directory, "imports", importId); Directory.CreateDirectory(staging);
         var path = Path.Combine(staging, "cfc.sqlite");
-        var protection = DataProtectionProvider.Create(new DirectoryInfo(Path.Combine(directory, "keys")), p => { p.SetApplicationName("CfcPilot"); if (OperatingSystem.IsWindows()) p.ProtectKeysWithDpapi(); }).CreateProtector("legacy-fields-v1");
+        var protection = DataProtectionProvider.Create(new DirectoryInfo(Path.Combine(directory, "keys")), p => { p.SetApplicationName(Environment.GetEnvironmentVariable("CFC_DATA_PROTECTION_APP_NAME")??"CfcPilot"); if (OperatingSystem.IsWindows()) p.ProtectKeysWithDpapi(); }).CreateProtector("legacy-fields-v1");
         var report = new List<object>(); long total = 0;
         using (var db = Database.Open(path))
         {
@@ -87,6 +87,8 @@ public static partial class PackageImporter
             }
             Database.Execute(db, "INSERT INTO metadata VALUES('importId',$0),('sourceTotal',$1),('revision','1'),('mode','real')", importId, total.ToString());
             await Projector.Run(db, directory, protection);
+            ProjectionRepair.Run(db);
+            Console.WriteLine("Deduplicação: "+JsonSerializer.Serialize(StudentDedup.Run(db),Database.Compact));
             LegacyIntegrity.Check(db);
             Database.Execute(db, "PRAGMA optimize; PRAGMA wal_checkpoint(TRUNCATE);");
             if (Database.Scalar(db, "PRAGMA integrity_check") != "ok") throw new InvalidDataException("Falha na integridade física da base.");

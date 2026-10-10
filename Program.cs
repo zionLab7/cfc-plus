@@ -31,6 +31,8 @@ if(args.FirstOrDefault()=="--self-test-portal-input"){await PortalInputChecks.Ru
 if(args.FirstOrDefault()=="--repair-agenda"){AgendaRepair.Run(Environment.GetEnvironmentVariable("CFC_DATA_DIR")??Path.Combine(Directory.GetCurrentDirectory(),"App_Data"));return;}
 if(args.FirstOrDefault()=="--create-relational-fixture"){RelationalFixture.Create(args[1]);return;}
 if(args.FirstOrDefault()=="--upgrade-projection"){ProjectionUpgrade.Run(Environment.GetEnvironmentVariable("CFC_DATA_DIR")??Path.Combine(Directory.GetCurrentDirectory(),"App_Data"));return;}
+if(args.FirstOrDefault()=="--self-test-student-dedup"){StudentDedupChecks.Run();return;}
+if(args.FirstOrDefault()=="--activate-import"){OperatorImport.Activate(Environment.GetEnvironmentVariable("CFC_DATA_DIR")??throw new ArgumentException("Informe CFC_DATA_DIR."));return;}
 if(args.FirstOrDefault()=="--audit-import"){ImportChecks.Run(Environment.GetEnvironmentVariable("CFC_DATA_DIR")??Path.Combine(Directory.GetCurrentDirectory(),"App_Data"));return;}
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddWindowsService(options=>options.ServiceName="CFC Plus Server");
@@ -82,6 +84,7 @@ builder.Services.AddRateLimiter(options => options.AddPolicy("login", ctx => Rat
 var app = builder.Build();
 var localCentral=central&&app.Environment.IsDevelopment()&&builder.Configuration["CFC_ALLOW_LOCAL_HTTP"]=="true";
 if(central)app.Services.GetRequiredService<TenantPlatform>().Prepare();
+if(args.FirstOrDefault()=="--provision-school"){if(!central||args.Length!=3)throw new ArgumentException("Provisionamento exige modo central, ID e nome da escola.");Console.WriteLine(JsonSerializer.Serialize(await app.Services.GetRequiredService<TenantPlatform>().Register(args[1],args[2])));await app.DisposeAsync();return;}
 if(args.FirstOrDefault()=="--adopt-school"){if(!central)throw new InvalidOperationException("Adoção exige modo central.");string Arg(string name){var i=Array.IndexOf(args,name);return i>=0&&i+1<args.Length?args[i+1]:throw new ArgumentException("Informe "+name);}Console.WriteLine(JsonSerializer.Serialize(await app.Services.GetRequiredService<TenantPlatform>().Register(args[1],Arg("--school-name"),Arg("--legacy-data"))));await app.DisposeAsync();return;}
 app.UseForwardedHeaders();
 app.Use(async(ctx,next)=>{
@@ -114,7 +117,7 @@ var shellStaticFiles=new StaticFileOptions{OnPrepareResponse=ctx=>
 }};
 app.UseDefaultFiles(); app.UseStaticFiles(shellStaticFiles); app.UseAuthentication(); app.UseAuthorization(); app.UseRateLimiter();
 if(central){app.UseTenantSelection();app.MapPlatform();}
-app.MapGet("/api/health", () => new { status = "ok", application="cfc-plus", version = "0.4.1", central, demo=!central&&!CommercialInstallation.Enabled(builder.Configuration)&&!app.Services.GetRequiredService<Store>().IsReal });
+app.MapGet("/api/health", () => new { status = "ok", application="cfc-plus", version = "0.4.2", central, demo=!central&&!CommercialInstallation.Enabled(builder.Configuration)&&!app.Services.GetRequiredService<Store>().IsReal });
 app.MapGet("/api/auth/units",(Store store)=>Results.Ok(store.LoginUnits()));
 app.MapPost("/api/auth/login", async (HttpContext ctx, Store store, JsonElement body) =>
 {
@@ -144,7 +147,7 @@ app.MapPost("/api/auth/password",async(HttpContext ctx,Store store,JsonElement b
  if(u.Id=="admin"){var initial=Path.Combine(store.DataRoot,"first-access.json");if(File.Exists(initial))File.Delete(initial);}
  await ctx.SignOutAsync();return Results.Ok(new{loginRequired=true});
 }).RequireAuthorization().RequireRateLimiting("login");
-app.MapGet("/api/distribution",(HttpContext ctx)=>Results.Ok(central?new{central=true,commercial=true,schoolName="CFC+",version="0.4.1",portal="/portal/",install="/install/",desktop=File.Exists(Path.Combine(dataDir,"downloads","CFC-Plus-Windows.exe"))?"/api/distribution/windows":"",support=builder.Configuration["CFC_SUPPORT_EMAIL"]??""}:CommercialInstallation.Public(builder.Configuration)));
+app.MapGet("/api/distribution",(HttpContext ctx)=>Results.Ok(central?new{central=true,commercial=true,schoolName="CFC+",version="0.4.2",portal="/portal/",install="/install/",desktop=File.Exists(Path.Combine(dataDir,"downloads","CFC-Plus-Windows.exe"))?"/api/distribution/windows":"",support=builder.Configuration["CFC_SUPPORT_EMAIL"]??""}:CommercialInstallation.Public(builder.Configuration)));
 app.MapGet("/api/distribution/windows",()=>{var file=Path.Combine(dataDir,"downloads","CFC-Plus-Windows.exe");return File.Exists(file)?Results.File(file,"application/vnd.microsoft.portable-executable","CFC-Plus-Windows.exe",enableRangeProcessing:true):Results.NotFound(new{error="O instalador será disponibilizado pelo responsável da plataforma."});});
 app.MapGet("/api/system/imports",async(HttpContext ctx,Store store,ImportQueue queue)=>Results.Ok(queue.List(await Current(ctx,store)))).RequireAuthorization();
 app.MapPost("/api/system/imports",async(HttpContext ctx,Store store,ImportQueue queue,JsonElement body)=>Results.Ok(await queue.Create(await Current(ctx,store),body.GetProperty("name").GetString()??"",body.GetProperty("bytes").GetInt64()))).RequireAuthorization();

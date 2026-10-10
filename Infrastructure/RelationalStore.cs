@@ -92,7 +92,7 @@ public sealed class RelationalStore
         else
         {
             var normalized = SearchText(scope.Query); var digits = string.Concat(scope.Query.Where(char.IsDigit));
-            var where = "($0='' OR unit_id=$0) AND ($1='' OR name LIKE $2 ESCAPE '\\' OR ($3<>'' AND cpf LIKE $4))";
+            var where = "($0='' OR unit_id=$0 OR EXISTS(SELECT 1 FROM json_each(json_extract(entities.json,'$.legacyUnitIds')) WHERE value=$0)) AND ($1='' OR name LIKE $2 ESCAPE '\\' OR ($3<>'' AND cpf LIKE $4))";
             var args = new object?[] { scope.UnitId, scope.Query.Trim(), "%" + normalized.Replace("\\", "\\\\").Replace("%", "\\%").Replace("_", "\\_") + "%", digits, "%" + digits + "%" };
             // Unicode folding is handled by an indexed search column installed after the projection.
             where = where.Replace("name LIKE", "json_extract(json,'$.searchName') LIKE");
@@ -138,7 +138,7 @@ public sealed class RelationalStore
     {
         using var db = Database.Open(Path, true); var term = SearchText(q.Trim()); if (term.Length < 2) return [];
         var digits = string.Concat(q.Where(char.IsDigit));
-        return List<Student>(db, "Students", "id IN(SELECT id FROM entities WHERE kind='Students' AND ($0='' OR unit_id=$0) AND (json_extract(json,'$.searchName') LIKE $1 ESCAPE '\\' OR ($2<>'' AND cpf LIKE $3)) ORDER BY name LIMIT 20)", unit, "%" + term.Replace("\\", "\\\\").Replace("%", "\\%").Replace("_", "\\_") + "%", digits, "%" + digits + "%");
+        return List<Student>(db, "Students", "id IN(SELECT id FROM entities WHERE kind='Students' AND ($0='' OR unit_id=$0 OR EXISTS(SELECT 1 FROM json_each(json_extract(entities.json,'$.legacyUnitIds')) WHERE value=$0)) AND (json_extract(json,'$.searchName') LIKE $1 ESCAPE '\\' OR ($2<>'' AND cpf LIKE $3)) ORDER BY name LIMIT 20)", unit, "%" + term.Replace("\\", "\\\\").Replace("%", "\\%").Replace("_", "\\_") + "%", digits, "%" + digits + "%");
     }
     public object Ledger(string unit,string from,string to,int page)
     {
